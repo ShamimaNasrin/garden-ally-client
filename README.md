@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Garden Ally
 
-## Getting Started
+### Live URL: &nbsp; &nbsp; [garden-ally.vercel.app](https://garden-ally-client.vercel.app/)
 
-First, run the development server:
+## Introduction
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Garden Ally, a platform dedicated to connecting gardening enthusiasts and professionals. The app facilitates user engagement by enabling profile management, community interactions, content sharing, and access to premium gardening resources. With features like account verification, content upvoting, and secure data handling, Garden Ally offers an intuitive interface that empowers users to exchange tips, explore exclusive content, and build a thriving community around their gardening passions.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Table of Contents
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Features](#key-features)
+- [Technologies](#technology-stack)
+- [Installation](#installation-instructions)
+- [Usage](#usage)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Features
 
-## Learn More
+- **User Authentication**: Simple email registration, secure JWT login, with password reset options;
 
-To learn more about Next.js, take a look at the following resources:
+- **User Profile Management**: Editable profile with a "My Profile" section for posts, followers/following; verification available after one upvote via AAMARPAY for premium access and badge display.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Post Creation & Sharing**: Creating/editing tips with image uploads, categorized by topics (Vegetables, Flowers, etc.); verified users can mark posts as Premium.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Upvote & Downvote System**: Users can upvote/downvote posts to surface top content.
 
-## Deploy on Vercel
+- **Commenting System**: Commenting with edit/delete options, plus optional replies for more interaction.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Payment Integration**: Aamarpay for premium content and profile verification payments.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **News Feed**: Infinite scroll feed with search/filtering; top upvoted content is prioritized.
+
+- **Following System**: Follow other users for personalized gardening content in the feed.
+
+## Technology Stack
+
+- **Frontend**: Built with `NextJS`, leveraging `TypeScript` for type safety and maintainability.
+- **Backend**: Powered by `Node.js` and `Express.js`, with `MongoDB` as the database solution.
+- **Authentication**: Secured with `JWT` (JSON Web Tokens) for user authentication.
+- **UI/UX**: Designed with responsiveness and usability in mind, ensuring a smooth experience across all devices.
+
+## Installation Instructions
+
+### Prerequisites
+
+Ensure you have the following installed on your machine:
+
+- Node.js (v22.1.0 or higher)
+- npm (v10.7.0 or higher)
+
+### Setup and Installation
+
+1. **Clone the Repository**:
+
+   ```bash
+   git clone https://github.com/ShamimaNasrin/garden-ally-client
+   cd garden-ally-client
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   npm i
+   ```
+
+3. **Run the app**:
+
+   ```bash
+   npm run dev
+   ```
+
+## Usage
+
+- Authenticate and authorize users through JWT tokens for secure access to features.
+- Allow admins to moderate posts, manage user accounts, and oversee community standards.
+- Enable users to create and share gardening tips, upvote content, comment, and follow others in the community.
+- Process premium features, such as verifying user profiles and granting access to exclusive content through secure payment integration.
