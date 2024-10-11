@@ -1,5 +1,7 @@
-import HeroSection from "@/components/UI/heroSection/HeroSection";
-import ImageGallery from "@/components/UI/imageGallery/ImageGallery";
+import HeroSection from "@/components/home/heroSection/HeroSection";
+import ImageGallery from "@/components/home/imageGallery/ImageGallery";
+import QuoteSlider from "@/components/home/quoteSection/QuoteSlider";
+import TipsSection from "@/components/home/tipsAndTricks/TipsSection";
 
 const HomePage = async () => {
   // const posts = await getAllPosts("isr");
@@ -7,7 +9,9 @@ const HomePage = async () => {
   return (
     <>
       <HeroSection />
+      <QuoteSlider />
       <ImageGallery />
+      <TipsSection />
     </>
   );
 };

@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+
+import { motion } from "framer-motion";
 
 interface GalleryItem {
   id: number;
@@ -43,8 +47,8 @@ const ImageGallery = () => {
   return (
     <section className="py-12 px-5 xl:px-16 lg:px-12 bg-zinc-50">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-emerald-400">
-          Our Latest Works
+        <h2 className="text-3xl font-bold text-emerald-500">
+          Our Latest Works Image Gallery
         </h2>
         <p className="mt-4 text-gray-600 max-w-xl mx-auto">
           Explore the latest beautiful and creative works from our gardening
@@ -52,7 +56,12 @@ const ImageGallery = () => {
         </p>
       </div>
 
-      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 auto-rows-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 2 }}
+        className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 auto-rows-auto"
+      >
         {galleryData.map((item) => (
           <div
             key={item.id}
@@ -71,7 +80,7 @@ const ImageGallery = () => {
             </div>
           </div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };

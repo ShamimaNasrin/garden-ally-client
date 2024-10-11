@@ -11,7 +11,7 @@ import { RiCloseLine, RiUserLine } from "react-icons/ri";
 
 const Navbar = () => {
   const links = [
-    { name: "Home", path: "/home" },
+    { name: "Home", path: "/" },
     { name: "News Feed", path: "/news-feed" },
     { name: "About Us", path: "/aboutus" },
     { name: "Contact Us", path: "/contactus" },
