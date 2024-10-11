@@ -1,9 +1,13 @@
+import HeroSection from "@/components/UI/heroSection/HeroSection";
+import ImageGallery from "@/components/UI/imageGallery/ImageGallery";
+
 const HomePage = async () => {
   // const posts = await getAllPosts("isr");
 
   return (
     <>
-      <h1>this is home</h1>
+      <HeroSection />
+      <ImageGallery />
     </>
   );
 };

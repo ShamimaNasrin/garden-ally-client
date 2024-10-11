@@ -1,21 +1,14 @@
-import type { Metadata } from "next";
+import Footer from "@/components/UI/footer/Footer";
+import Navbar from "@/components/UI/navbar/Navbar";
 
-// import NavBar from "./components/page/shared/Navnar";
-
-export const metadata: Metadata = {
-  title: "Apollo Gears",
-  description: "Next Level Riding Sharing Service",
-};
-
-export default function DashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const CommonLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      {/* <NavBar></NavBar> */}
+      <Navbar />
       {children}
+      <Footer />
     </div>
   );
-}
+};
+
+export default CommonLayout;
