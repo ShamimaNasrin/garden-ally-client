@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import axiosInstance from "@/lib/AxiosInstance";
 import { TRegisterFormInput } from "@/app/(commonLayout)/register/page";
 import { TLoginFormInput } from "@/app/(commonLayout)/login/page";
+import { TForgotPasswordInput, TResetPasswordInput } from "@/types";
 
 export const registerUser = async (userData: TRegisterFormInput) => {
   try {
@@ -92,16 +93,29 @@ export const getNewAccessToken = async () => {
   }
 };
 
-export const forgotPassword = async (userData: TLoginFormInput) => {
+export const forgotPassword = async (email: TForgotPasswordInput) => {
   try {
-    const { data } = await axiosInstance.post(
-      "/auth/forget-password",
-      userData
-    );
-    console.log(data);
-
-    return data;
+    const res = await axiosInstance.post("/auth/forget-password", email);
+    console.log("forgotPassword res:", res);
+    return res;
   } catch (error: any) {
-    throw new Error(error);
+    console.error(
+      "Forgot Password Error:",
+      error.response?.data || error.message
+    );
+    throw new Error(error.response?.data?.message || error.message);
   }
+};
+
+export const resetPassword = async (userData: TResetPasswordInput) => {
+  const response = await axiosInstance.post(
+    "/auth/reset-password",
+    { userId: userData.userId, newPassword: userData.newPassword },
+    {
+      headers: {
+        authorization: userData.token,
+      },
+    }
+  );
+  return response.data;
 };

@@ -42,3 +42,13 @@ export interface IUser {
   updatedAt?: string;
   __v?: number;
 }
+
+export interface TForgotPasswordInput {
+  email: string;
+}
+
+export type TResetPasswordInput = {
+  userId: string;
+  newPassword: string;
+  token: string;
+};

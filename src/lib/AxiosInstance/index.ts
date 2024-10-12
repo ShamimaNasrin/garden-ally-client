@@ -8,15 +8,31 @@ const axiosInstance = axios.create({
   baseURL: envConfig.baseApi,
 });
 
+// axiosInstance.interceptors.request.use(
+//   function (config) {
+//     const cookieStore = cookies();
+//     const accessToken = cookieStore.get("accessToken")?.value;
+
+//     if (accessToken) {
+//       config.headers.Authorization = accessToken;
+//     }
+
+//     return config;
+//   },
+//   function (error) {
+//     return Promise.reject(error);
+//   }
+// );
+
 axiosInstance.interceptors.request.use(
   function (config) {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-
-    if (accessToken) {
-      config.headers.Authorization = accessToken;
+    // Apply authorization only if it’s necessary
+    if (!config.url?.includes("/auth/forget-password")) {
+      const accessToken = cookies().get("accessToken")?.value;
+      if (accessToken) {
+        config.headers.Authorization = accessToken;
+      }
     }
-
     return config;
   },
   function (error) {

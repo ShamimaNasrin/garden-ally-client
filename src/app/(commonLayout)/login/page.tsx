@@ -112,6 +112,7 @@ const LoginPage = () => {
           <div className="flex justify-between">
             <button
               type="button"
+              onClick={() => router.push("/forgot-password")}
               className="text-emerald-500 hover:text-emerald-600 text-sm"
             >
               Forgot Password?
