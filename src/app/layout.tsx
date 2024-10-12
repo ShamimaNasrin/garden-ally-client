@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-// import { Roboto } from "next/font/google";
-import { Toaster } from "react-hot-toast";
-
-// const roboto = Roboto({
-//   weight: "400",
-//   subsets: ["latin"],
-//   display: "swap",
-// });
+import { Providers } from "../lib/Providers";
 
 export const metadata: Metadata = {
   title: "Garden Ally",
@@ -22,9 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="light">
-      <body className="">
-        <div>{children}</div>
-        <Toaster />
+      <body>
+        <Providers>
+          <div>{children}</div>
+        </Providers>
       </body>
     </html>
   );

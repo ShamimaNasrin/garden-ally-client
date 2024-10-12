@@ -1,13 +1,13 @@
 "use client";
 
+import { protectedRoutes } from "@/constant";
+import { useUser } from "@/context/user.provider";
+import { logout } from "@/service/AuthServices";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
 import { RiCloseLine, RiUserLine } from "react-icons/ri";
-
-// type TUser = {
-//   role: "user" | "admin";
-// };
 
 const Navbar = () => {
   const links = [
@@ -15,18 +15,24 @@ const Navbar = () => {
     { name: "News Feed", path: "/news-feed" },
     { name: "About Us", path: "/aboutus" },
     { name: "Contact Us", path: "/contactus" },
-    // { name: "Register", path: "/signup" },
   ];
 
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const [userDetails, setUserDetails] = useState({
-    name: "Shamima",
-    role: "user",
-  });
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user: userDetails, setIsLoading: userLoading } = useUser();
+
+  // console.log("saved user details:", userDetails);
 
   const handleLogout = () => {
+    logout();
+    userLoading(true);
+
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/");
+    }
     setDropdownOpen(false);
   };
 
@@ -79,8 +85,8 @@ const Navbar = () => {
                       <Link
                         href={
                           userDetails.role === "user"
-                            ? `/${userDetails.role}/user-dashboard`
-                            : `/${userDetails.role}/admin-dashboard`
+                            ? "/user-dashboard"
+                            : "/admin-dashboard"
                         }
                         className="block text-sm text-gray-700"
                       >
@@ -89,7 +95,11 @@ const Navbar = () => {
                     </li>
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link
-                        href="/profile"
+                        href={
+                          userDetails.role === "user"
+                            ? "/user-profile"
+                            : "/admin-profile"
+                        }
                         className="block text-sm text-gray-700"
                       >
                         Profile
@@ -97,7 +107,7 @@ const Navbar = () => {
                     </li>
                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                       <button
-                        onClick={handleLogout}
+                        onClick={() => handleLogout()}
                         className="flex items-center gap-2 text-sm text-gray-700"
                       >
                         Logout

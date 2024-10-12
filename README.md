@@ -31,6 +31,8 @@ Garden Ally, a platform dedicated to connecting gardening enthusiasts and profes
 
 - **Following System**: Follow other users for personalized gardening content in the feed.
 
+- **Unique Section (Tips & Tricks)**: Discover personalized gardening inspiration by following other users, and get tailored tips and tricks right in your feed!
+
 ## Technology Stack
 
 - **Frontend**: Built with `NextJS`, leveraging `TypeScript` for type safety and maintainability.
