@@ -16,6 +16,7 @@ const UserProfile = () => {
   const [posts, setPosts] = useState<TPostCard[]>([
     {
       id: "1",
+      authorId: "user1",
       authorName: "John",
       title: "Post 1",
       description: "This is the first post.",
@@ -27,6 +28,7 @@ const UserProfile = () => {
     },
     {
       id: "2",
+      authorId: "user2",
       authorName: "Alex",
       title: "Post 2",
       description: "This is the second post.",
@@ -74,6 +76,7 @@ const UserProfile = () => {
   ]);
 
   const [userInfo, setUserInfo] = useState({
+    id: "user1",
     name: "John Doe",
     phone: "123-456-7890",
     address: "123 Main St, Anytown, USA",
@@ -266,9 +269,9 @@ const UserProfile = () => {
 
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4">Posts</h2>
-            <div className="grid grid-cols-1 gap-6">
+            <div className="">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} userId="user1" post={post} />
               ))}
             </div>
           </div>

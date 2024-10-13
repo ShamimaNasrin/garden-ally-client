@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FaHeart, FaRegHeart, FaComment } from "react-icons/fa";
+import { AiFillEdit } from "react-icons/ai";
 
 export type TPostCard = {
   id: string;
+  authorId: string;
   authorName: string;
   title: string;
   description: string;
@@ -16,6 +18,11 @@ export type TPostCard = {
   downVoteNumber: number;
 };
 
+type TPostProps = {
+  userId: string;
+  post: TPostCard;
+};
+
 import {
   AiOutlineLike,
   AiOutlineDislike,
@@ -23,12 +30,17 @@ import {
   AiTwotoneDislike,
 } from "react-icons/ai";
 
-const PostCard = ({ post }: { post: TPostCard }) => {
+const PostCard = ({ userId, post }: TPostProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isUnLiked, setIsUnLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const handleEdit = (postId: string) => {
+    console.log("handleEdit", postId);
+  };
+
   return (
-    <div className="max-w-[600px] bg-white rounded-lg overflow-hidden p-4 relative shadow-md hover:shadow-md ">
+    <div className="my-5 max-w-[600px] bg-white rounded-lg overflow-hidden p-4 relative shadow-md hover:shadow-md ">
       <div className="flex justify-between items-start">
         <div className="flex items-center space-x-2 mb-2">
           <Image
@@ -41,15 +53,24 @@ const PostCard = ({ post }: { post: TPostCard }) => {
           <p>{post.authorName}</p>
         </div>
 
-        <button
-          className={`flex items-center gap-1 ${
-            isFavorited ? "text-red-500" : "text-gray-500"
-          }`}
-          onClick={() => setIsFavorited(!isFavorited)}
-          disabled={post?.isPremium && !post?.isUserVerified}
-        >
-          {isFavorited ? <FaHeart /> : <FaRegHeart />}{" "}
-        </button>
+        <div className="flex justify-center items-center">
+          <button
+            className={`mr-1 ${userId !== post?.authorId && "hidden"}`}
+            onClick={() => handleEdit(post?.id)}
+            disabled={post?.isPremium && !post?.isUserVerified}
+          >
+            <AiFillEdit />
+          </button>
+          <button
+            className={`flex items-center gap-1 ${
+              isFavorited ? "text-red-500" : "text-gray-500"
+            }`}
+            onClick={() => setIsFavorited(!isFavorited)}
+            disabled={post?.isPremium && !post?.isUserVerified}
+          >
+            {isFavorited ? <FaHeart /> : <FaRegHeart />}{" "}
+          </button>
+        </div>
       </div>
 
       <div className="relative">

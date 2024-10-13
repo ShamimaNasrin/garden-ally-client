@@ -2,6 +2,7 @@
 
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { useUserRegistration } from "@/hooks/auth.hook";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -212,13 +213,12 @@ const SignupPage = () => {
           <div className="text-center">
             <p className="text-gray-600 text-sm">
               Already have an account?
-              <a
+              <Link
                 href="/login"
                 className="text-emerald-500 hover:text-emerald-600 font-semibold"
               >
-                {" "}
-                Log in
-              </a>
+                <span className=""> Log in</span>
+              </Link>
             </p>
           </div>
 

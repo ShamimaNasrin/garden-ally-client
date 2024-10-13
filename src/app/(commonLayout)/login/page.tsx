@@ -2,11 +2,12 @@
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useUserLogin } from "@/hooks/auth.hook";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { useUser } from "@/context/user.provider";
+import Link from "next/link";
 
 export interface TLoginFormInput {
   email: string;
@@ -20,11 +21,11 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<TLoginFormInput>();
 
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const router = useRouter();
   const { setIsLoading: userLoading } = useUser();
 
-  const redirect = searchParams.get("redirect");
+  // const redirect = searchParams.get("redirect");
 
   const { mutate: handleUserLogin, isPending, isSuccess } = useUserLogin();
 
@@ -36,13 +37,18 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (!isPending && isSuccess) {
-      if (redirect) {
-        router.push(redirect);
-      } else {
-        router.push("/");
-      }
+      router.push("/");
+      // if (redirect) {
+      //   router.push(redirect);
+      // } else {
+      //   router.push("/");
+      // }
     }
   }, [isPending, isSuccess]);
+
+  const handleForgotPassword = () => {
+    router.push("/forgot-password");
+  };
 
   return (
     <>
@@ -112,7 +118,7 @@ const LoginPage = () => {
           <div className="flex justify-between">
             <button
               type="button"
-              onClick={() => router.push("/forgot-password")}
+              onClick={handleForgotPassword}
               className="text-emerald-500 hover:text-emerald-600 text-sm"
             >
               Forgot Password?
@@ -122,13 +128,12 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-gray-600 text-sm">
               Don’t have an account yet?
-              <a
+              <Link
                 href="/register"
                 className="text-emerald-500 hover:text-emerald-600 font-semibold"
               >
-                {" "}
-                Sign up
-              </a>
+                <span className="">Sign up</span>
+              </Link>
             </p>
           </div>
 
