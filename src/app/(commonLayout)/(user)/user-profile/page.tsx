@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard, { TPostCard } from "@/components/profile/PostCard";
+import EditPostModal from "@/components/profile/EditPostModal";
+import CommentModal from "@/components/profile/CommentModal";
 
 type User = {
   id: string;
@@ -12,33 +14,39 @@ type User = {
   isFollowing: boolean;
 };
 
+const posts = [
+  {
+    id: "1",
+    authorId: "user1",
+    authorName: "John",
+    title: "Post 1",
+    description: "This is the first post.",
+    imageUrl: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+    isPremium: false,
+    isUserVerified: false,
+    category: "Vegetables",
+    upVoteNumber: 10,
+    downVoteNumber: 20,
+  },
+  {
+    id: "2",
+    authorId: "user2",
+    authorName: "Alex",
+    title: "Post 2",
+    description: "This is the second post.",
+    imageUrl: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+    isPremium: false,
+    isUserVerified: false,
+    category: "Vegetables",
+    upVoteNumber: 90,
+    downVoteNumber: 5,
+  },
+];
+
 const UserProfile = () => {
-  const [posts, setPosts] = useState<TPostCard[]>([
-    {
-      id: "1",
-      authorId: "user1",
-      authorName: "John",
-      title: "Post 1",
-      description: "This is the first post.",
-      imageUrl: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-      isPremium: false,
-      isUserVerified: false,
-      upVoteNumber: 10,
-      downVoteNumber: 20,
-    },
-    {
-      id: "2",
-      authorId: "user2",
-      authorName: "Alex",
-      title: "Post 2",
-      description: "This is the second post.",
-      imageUrl: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-      isPremium: true,
-      isUserVerified: false,
-      upVoteNumber: 90,
-      downVoteNumber: 5,
-    },
-  ]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<TPostCard | null>(null);
 
   const [following, setFollowing] = useState<User[]>([
     {
@@ -176,7 +184,7 @@ const UserProfile = () => {
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
               >
                 Update Info
               </button>
@@ -207,7 +215,7 @@ const UserProfile = () => {
 
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
               >
                 Confirm
               </button>
@@ -226,8 +234,8 @@ const UserProfile = () => {
                   className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                 >
                   <Image
-                    src={user.profilePhoto}
-                    alt={`${user.name}'s profile picture`}
+                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                    alt="profile picture"
                     width={50}
                     height={50}
                     className="rounded-full"
@@ -255,7 +263,7 @@ const UserProfile = () => {
                   className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                 >
                   <Image
-                    src={user.profilePhoto}
+                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                     alt="profile picture"
                     width={50}
                     height={50}
@@ -271,12 +279,31 @@ const UserProfile = () => {
             <h2 className="text-xl font-semibold mb-4">Posts</h2>
             <div className="">
               {posts.map((post) => (
-                <PostCard key={post.id} userId="user1" post={post} />
+                <PostCard
+                  key={post.id}
+                  userId="user1"
+                  post={post}
+                  isEditModalOpen={isEditModalOpen}
+                  isCommentModalOpen={isCommentModalOpen}
+                  setIsEditModalOpen={setIsEditModalOpen}
+                  setIsCommentModalOpen={setIsCommentModalOpen}
+                  setSelectedPost={setSelectedPost}
+                />
               ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Edit Post Modal */}
+      {isEditModalOpen && selectedPost && (
+        <EditPostModal post={selectedPost} closeModal={setIsEditModalOpen} />
+      )}
+
+      {/* Comment Modal */}
+      {isCommentModalOpen && selectedPost && (
+        <CommentModal post={selectedPost} closeModal={setIsCommentModalOpen} />
+      )}
     </div>
   );
 };

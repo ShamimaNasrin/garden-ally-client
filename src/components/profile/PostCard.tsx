@@ -15,12 +15,18 @@ export type TPostCard = {
   isPremium: boolean;
   isUserVerified: boolean;
   upVoteNumber: number;
+  category: string;
   downVoteNumber: number;
 };
 
 type TPostProps = {
   userId: string;
   post: TPostCard;
+  isEditModalOpen: boolean;
+  isCommentModalOpen: boolean;
+  setIsEditModalOpen: (value: boolean) => void;
+  setIsCommentModalOpen: (value: boolean) => void;
+  setSelectedPost: (post: TPostCard | null) => void;
 };
 
 import {
@@ -30,13 +36,28 @@ import {
   AiTwotoneDislike,
 } from "react-icons/ai";
 
-const PostCard = ({ userId, post }: TPostProps) => {
+const PostCard = ({
+  userId,
+  post,
+  isEditModalOpen,
+  isCommentModalOpen,
+  setIsEditModalOpen,
+  setIsCommentModalOpen,
+  setSelectedPost,
+}: TPostProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isUnLiked, setIsUnLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const handleEdit = (postId: string) => {
-    console.log("handleEdit", postId);
+  const openEditModal = () => {
+    setSelectedPost(post);
+    setIsEditModalOpen(!isEditModalOpen);
+  };
+
+  // Open Comment Modal
+  const openCommentModal = () => {
+    setSelectedPost(post);
+    setIsCommentModalOpen(!isCommentModalOpen);
   };
 
   return (
@@ -56,8 +77,7 @@ const PostCard = ({ userId, post }: TPostProps) => {
         <div className="flex justify-center items-center">
           <button
             className={`mr-1 ${userId !== post?.authorId && "hidden"}`}
-            onClick={() => handleEdit(post?.id)}
-            disabled={post?.isPremium && !post?.isUserVerified}
+            onClick={openEditModal}
           >
             <AiFillEdit />
           </button>
@@ -75,7 +95,13 @@ const PostCard = ({ userId, post }: TPostProps) => {
 
       <div className="relative">
         <div
-          className={post?.isPremium && !post?.isUserVerified ? "blur-sm" : ""}
+          className={
+            post?.isPremium &&
+            !post?.isUserVerified &&
+            userId !== post?.authorId
+              ? "blur-sm"
+              : ""
+          }
         >
           <h3 className="text-lg font-semibold my-1">{post?.title}</h3>
           <p className="text-gray-600 text-sm mb-2">{post?.description}</p>
@@ -113,16 +139,24 @@ const PostCard = ({ userId, post }: TPostProps) => {
             </button>
 
             <div className="flex items-center gap-1 text-gray-500">
-              <FaComment /> <span className="text-sm">3 Comments</span>
+              <FaComment />{" "}
+              <span
+                onClick={openCommentModal}
+                className="text-sm cursor-pointer"
+              >
+                Comments
+              </span>
             </div>
           </div>
         </div>
 
-        {post?.isPremium && !post?.isUserVerified && (
-          <div className="absolute inset-0 bg-white/30 text-lg flex items-center justify-center text-black font-bold">
-            Premium Content
-          </div>
-        )}
+        {post?.isPremium &&
+          !post?.isUserVerified &&
+          userId !== post?.authorId && (
+            <div className="absolute inset-0 bg-white/30 text-lg flex items-center justify-center text-black font-bold">
+              Premium Content
+            </div>
+          )}
       </div>
     </div>
   );
