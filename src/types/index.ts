@@ -30,13 +30,11 @@ export interface IUser {
   phone: string;
   address: string;
   profilePhoto: string;
-
   // favouritePosts?: string[];
   favouritePosts?: Array<any>;
   isVerified?: boolean;
   followers?: string[];
   followings?: string[];
-
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
