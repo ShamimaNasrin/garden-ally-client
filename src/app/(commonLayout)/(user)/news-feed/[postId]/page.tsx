@@ -60,7 +60,7 @@ const post = {
   downVoteNumber: 20,
 };
 
-const PostDetails = ({ params: { itemId } }: TPostDetailsProps) => {
+const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
   const [selectedComment, setSelectedComment] = useState<TComment | null>(null);

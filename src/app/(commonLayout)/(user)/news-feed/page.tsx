@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import AddPostModal from "@/components/profile/AddPostModal";
 import PostCard from "@/components/profile/PostCard";
