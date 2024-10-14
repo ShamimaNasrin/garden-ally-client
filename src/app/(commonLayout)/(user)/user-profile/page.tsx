@@ -5,8 +5,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard, { TPostCard } from "@/components/profile/PostCard";
-import EditPostModal from "@/components/profile/EditPostModal";
-import CommentModal from "@/components/profile/CommentModal";
 import { useUser } from "@/context/user.provider";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { useUpdateUserProfile } from "@/hooks/user.hook";
@@ -64,13 +62,12 @@ const posts = [
 ];
 
 const UserProfile = () => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<TPostCard | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const { user: userInfo, isLoading: userLoading } = useUser();
-  // console.log("current user: ", userInfo);
+  console.log("current user: ", userInfo);
 
   const [formData, setFormData] = useState<TUserForm>({
     name: userInfo?.name || "",
@@ -79,8 +76,13 @@ const UserProfile = () => {
     profilePhoto: userInfo?.profilePhoto || "",
   });
 
-  const { mutate: updateUserProfile, isSuccess: isUpdateProfileTrue } =
-    useUpdateUserProfile(userInfo?._id || "");
+  const {
+    data: updatedUser,
+    mutate: updateUserProfile,
+    isSuccess: isUpdateProfileTrue,
+  } = useUpdateUserProfile(userInfo?._id || "");
+
+  // console.log("updated user: ", updatedUser);
 
   const [following, setFollowing] = useState<User[]>([
     {
@@ -131,41 +133,47 @@ const UserProfile = () => {
   const handleUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.name) {
+    console.log("userLoading:", userLoading);
+
+    if (formData.name.length === 0) {
+      console.log("name:", userInfo.name);
       setFormData({
         ...formData,
-        name: userInfo?.name || "",
+        name: userInfo?.name,
       });
     }
-    if (!formData.phone) {
+    if (formData.phone.length === 0) {
+      console.log("phone:", userInfo.phone);
       setFormData({
         ...formData,
-        phone: userInfo?.phone || "",
+        phone: userInfo?.phone,
       });
     }
-    if (!formData.address) {
+    if (formData.address.length === 0) {
+      console.log("address:", userInfo.address);
       setFormData({
         ...formData,
-        address: userInfo?.address || "",
+        address: userInfo?.address,
       });
     }
-    if (!formData.profilePhoto) {
+    if (formData.profilePhoto.length === 0) {
+      console.log("profilePhoto:", userInfo.profilePhoto);
       setFormData({
         ...formData,
-        profilePhoto: userInfo?.profilePhoto || "",
+        profilePhoto: userInfo?.profilePhoto,
       });
     }
 
-    // console.log("update user:", formData);
+    console.log("update user:", formData);
 
-    if (
-      formData.name ||
-      formData.phone ||
-      formData.address ||
-      formData.profilePhoto
-    ) {
-      updateUserProfile(formData);
-    }
+    // if (
+    //   formData.name.length ||
+    //   formData.phone.length ||
+    //   formData.address.length ||
+    //   formData.profilePhoto.length
+    // ) {
+    //   updateUserProfile(formData);
+    // }
 
     if (isUpdateProfileTrue) {
       toast.success("Profile updated");
@@ -187,7 +195,11 @@ const UserProfile = () => {
   };
 
   const handleChangePassword = () => {
-    console.log("User info updated!");
+    if (!oldPassword?.length || !newPassword?.length) {
+      console.log("Password change:", oldPassword, newPassword);
+      toast.error("Please provide your old and new password");
+      return;
+    }
   };
 
   return (
@@ -294,7 +306,9 @@ const UserProfile = () => {
                           type="text"
                           placeholder="Old Password"
                           name="oldPassword"
+                          onChange={(e) => setOldPassword(e.target.value)}
                           className="border p-2 rounded"
+                          required
                         />
                       </div>
                       <div className="flex flex-col">
@@ -303,7 +317,9 @@ const UserProfile = () => {
                           type="tel"
                           placeholder="New Password"
                           name="newPassword"
+                          onChange={(e) => setNewPassword(e.target.value)}
                           className="border p-2 rounded"
+                          required
                         />
                       </div>
 
@@ -373,16 +389,7 @@ const UserProfile = () => {
                     <h2 className="text-xl font-semibold mb-4">Posts</h2>
                     <div className="">
                       {posts.map((post) => (
-                        <PostCard
-                          key={post.id}
-                          userId="user1"
-                          post={post}
-                          isEditModalOpen={isEditModalOpen}
-                          isCommentModalOpen={isCommentModalOpen}
-                          setIsEditModalOpen={setIsEditModalOpen}
-                          setIsCommentModalOpen={setIsCommentModalOpen}
-                          setSelectedPost={setSelectedPost}
-                        />
+                        <PostCard key={post.id} userId="user1" post={post} />
                       ))}
                     </div>
                   </div>
@@ -391,16 +398,6 @@ const UserProfile = () => {
             </>
           )}
         </>
-      )}
-
-      {/* Edit Post Modal */}
-      {isEditModalOpen && selectedPost && (
-        <EditPostModal post={selectedPost} closeModal={setIsEditModalOpen} />
-      )}
-
-      {/* Comment Modal */}
-      {isCommentModalOpen && selectedPost && (
-        <CommentModal post={selectedPost} closeModal={setIsCommentModalOpen} />
       )}
     </div>
   );

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useUser } from "@/context/user.provider";
+import { getCurrentUser } from "@/service/AuthServices";
 import { updateUserProfile } from "@/service/UserServices";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -29,15 +31,13 @@ export type TUpdateProfile = {
   profilePhoto: string;
 };
 
-// export const useUpdateUserProfile = (
-//   userId: string,
-//   updatedInfo: TUpdateProfile
-// ) => {
-//   return useMutation<any, Error, FormData>({
+// export const useUpdateUserProfile = (userId: string) => {
+//   return useMutation({
 //     mutationKey: ["UPDATE_PROFILE"],
-//     mutationFn: async () => await updateUserProfile(userId, updatedInfo),
+//     mutationFn: (updatedInfo: TUpdateProfile) =>
+//       updateUserProfile(userId, updatedInfo),
 //     onSuccess: () => {
-//       toast.success("Pofile updated successfully");
+//       toast.success("Profile updated successfully");
 //     },
 //     onError: (error: any) => {
 //       toast.error(error.message);
@@ -46,12 +46,18 @@ export type TUpdateProfile = {
 // };
 
 export const useUpdateUserProfile = (userId: string) => {
+  const { setUser } = useUser();
+
   return useMutation({
     mutationKey: ["UPDATE_PROFILE"],
     mutationFn: (updatedInfo: TUpdateProfile) =>
       updateUserProfile(userId, updatedInfo),
-    onSuccess: () => {
+    onSuccess: async (data) => {
       toast.success("Profile updated successfully");
+
+      // Refetch the user with the new token
+      const updatedUser = await getCurrentUser();
+      setUser(updatedUser);
     },
     onError: (error: any) => {
       toast.error(error.message);

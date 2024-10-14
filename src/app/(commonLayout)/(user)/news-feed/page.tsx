@@ -1,8 +1,6 @@
 "use client";
 import AddPostModal from "@/components/profile/AddPostModal";
-import CommentModal from "@/components/profile/CommentModal";
-import EditPostModal from "@/components/profile/EditPostModal";
-import PostCard, { TPostCard } from "@/components/profile/PostCard";
+import PostCard from "@/components/profile/PostCard";
 import React, { useState } from "react";
 
 const posts = [
@@ -37,11 +35,7 @@ const posts = [
 const NewsFeedPage = () => {
   const [searchByTitle, setSearchByTitle] = useState("");
   const [searchByCategory, setSearchByCategory] = useState("");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isAddPostModalOpen, setIsAddPostModalOpen] = useState(false);
-
-  const [selectedPost, setSelectedPost] = useState<TPostCard | null>(null);
 
   // clear all filter
   const handleFilterClear = () => {
@@ -122,30 +116,11 @@ const NewsFeedPage = () => {
         <div className="mt-8">
           <div className="">
             {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                userId="user1"
-                post={post}
-                isEditModalOpen={isEditModalOpen}
-                isCommentModalOpen={isCommentModalOpen}
-                setIsEditModalOpen={setIsEditModalOpen}
-                setIsCommentModalOpen={setIsCommentModalOpen}
-                setSelectedPost={setSelectedPost}
-              />
+              <PostCard key={post.id} userId="user1" post={post} />
             ))}
           </div>
         </div>
       </div>
-
-      {/* Edit Post Modal */}
-      {isEditModalOpen && selectedPost && (
-        <EditPostModal post={selectedPost} closeModal={setIsEditModalOpen} />
-      )}
-
-      {/* Comment Modal */}
-      {isCommentModalOpen && selectedPost && (
-        <CommentModal post={selectedPost} closeModal={setIsCommentModalOpen} />
-      )}
 
       {/* Add post modal */}
       {isAddPostModalOpen && (

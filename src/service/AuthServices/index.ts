@@ -13,7 +13,7 @@ export const registerUser = async (userData: TRegisterFormInput) => {
   try {
     const { data } = await axiosInstance.post("/auth/signup", userData);
 
-    console.log("registerUser authservice:", data);
+    // console.log("registerUser authservice:", data);
 
     if (data.success) {
       cookies().set("accessToken", data?.data?.accessToken);
@@ -30,7 +30,7 @@ export const loginUser = async (userData: TLoginFormInput) => {
   try {
     const { data } = await axiosInstance.post("/auth/login", userData);
 
-    console.log("loginUser authservice:", data);
+    // console.log("loginUser authservice:", data);
 
     if (data.success) {
       cookies().set("accessToken", data?.data?.accessToken);

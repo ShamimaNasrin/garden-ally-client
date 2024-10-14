@@ -3,6 +3,7 @@
 
 import envConfig from "@/config/envConfig";
 import { TUpdateProfile } from "@/hooks/user.hook";
+import { cookies } from "next/headers";
 // import axiosInstance from "@/lib/AxiosInstance";
 
 // export const getUserByEmail = async (userEmail: string) => {
@@ -18,30 +19,10 @@ import { TUpdateProfile } from "@/hooks/user.hook";
 //   }
 // };
 
-export const getPost = async (postId: string) => {
-  let fetchOptions = {};
-
-  fetchOptions = {
-    cache: "no-store",
-  };
-
-  const res = await fetch(`${envConfig.baseApi}/items/${postId}`, fetchOptions);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-};
-
 export const updateUserProfile = async (
   userId: string,
   updatedInfo: TUpdateProfile
 ) => {
-  console.log("userId,", userId);
-  console.log("Updating user profile", updatedInfo);
-  console.log("url", `${envConfig.baseApi}/users/updateProfile/${userId}`);
-
   const fetchOptions: any = {
     method: "PATCH",
     headers: {
@@ -51,16 +32,25 @@ export const updateUserProfile = async (
     cache: "no-store",
   };
 
+  // console.log("updateUserProfile ", userId, updatedInfo);
+
   const res = await fetch(
     `${envConfig.baseApi}/users/updateProfile/${userId}`,
     fetchOptions
   );
 
-  console.log("updateUserProfile res", res);
+  // console.log("updateUserProfile res", res);
 
   if (!res.ok) {
     throw new Error("Failed to update user profile");
   }
+  const UpdateResponse = await res.json();
+  console.log("updateUserProfile res", UpdateResponse);
 
-  return res.json();
+  if (UpdateResponse?.success) {
+    // Save the new token in cookies
+    cookies().set("accessToken", UpdateResponse?.data?.accessToken);
+  }
+
+  return UpdateResponse;
 };
