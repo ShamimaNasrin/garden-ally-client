@@ -3,9 +3,6 @@ export type TPost = {
   _id: string;
   status: string;
   description: string;
-  //   item?: IPost;
-  //   claimant: string | IClaimant;
-  //   answers: IAnswer[];
   feedback: string | null;
   createdAt: string;
   updatedAt: string;

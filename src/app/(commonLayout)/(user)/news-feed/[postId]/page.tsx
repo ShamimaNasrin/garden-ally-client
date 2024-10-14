@@ -6,6 +6,8 @@ import Image from "next/image";
 import { AiFillEdit } from "react-icons/ai";
 import { FiTrash2 } from "react-icons/fi";
 import EditPostModal from "@/components/profile/EditPostModal";
+import { FaFileArrowDown } from "react-icons/fa6";
+import { usePDF } from "react-to-pdf";
 
 type TPostDetailsProps = {
   params: {
@@ -67,6 +69,8 @@ const PostDetails = ({ params: { itemId } }: TPostDetailsProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const { toPDF, targetRef } = usePDF({ filename: "post.pdf" });
+
   const openEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
   };
@@ -103,7 +107,10 @@ const PostDetails = ({ params: { itemId } }: TPostDetailsProps) => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6 flex justify-center">
+    <div
+      ref={targetRef}
+      className="bg-gray-100 min-h-screen p-6 flex justify-center"
+    >
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl">
         <div className="flex justify-between items-start">
           <div className=" w-[90%] mb-2 ">
@@ -113,9 +120,12 @@ const PostDetails = ({ params: { itemId } }: TPostDetailsProps) => {
             <p className="text-gray-600 text-md mb-6">{post.description}</p>
           </div>
 
-          <div className=" w-[10%] justify-self-end text-end ">
+          <div className="flex w-[10%] justify-end items-center text-end ">
+            <button onClick={() => toPDF()}>
+              <FaFileArrowDown className="inline-block mr-1" />
+            </button>
             <button
-              className={`mr-1 ${userId !== post?.authorId && "hidden"}`}
+              className={` ${userId !== post?.authorId && "hidden"}`}
               onClick={openEditModal}
             >
               <AiFillEdit />
