@@ -6,4 +6,7 @@ export const protectedRoutes = [
   "/admin-dashboard",
   "/login",
   "/register",
+  "/admin-dashboard/user-management",
+  "/admin-dashboard/payment-history",
+  "/admin-dashboard/content-management",
 ];

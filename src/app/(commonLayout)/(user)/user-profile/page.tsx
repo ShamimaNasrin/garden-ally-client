@@ -4,11 +4,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
-import PostCard, { TPostCard } from "@/components/profile/PostCard";
+import PostCard from "@/components/profile/PostCard";
 import { useUser } from "@/context/user.provider";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { useUpdateUserProfile } from "@/hooks/user.hook";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 type User = {
   id: string;
@@ -17,7 +18,7 @@ type User = {
   isFollowing: boolean;
 };
 
-interface TUserForm {
+export interface TUserForm {
   _id?: string;
   role?: string;
   email?: string;
@@ -61,6 +62,99 @@ const posts = [
   },
 ];
 
+export interface FollowSuggestion {
+  _id: string;
+  name: string;
+  profilePhoto: string;
+  followers: string[];
+  followings: string[];
+}
+
+const followSuggestions = [
+  {
+    _id: "follow1",
+    name: "Devid Paul",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+  {
+    _id: "follow2",
+    name: "John Snow",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+  {
+    _id: "follow7",
+    name: "Brad Stark",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+  {
+    _id: "follow5",
+    name: "Sansa Stark",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+  {
+    _id: "follow3",
+    name: "Ariya Stark",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+  {
+    _id: "follow4",
+    name: "Alex",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    followers: ["user1"],
+    followings: ["user2"],
+  },
+];
+
+const followingList = [
+  {
+    id: "1",
+    name: "User One",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isFollowing: true,
+  },
+  {
+    id: "2",
+    name: "User Two",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isFollowing: false,
+  },
+];
+
+const followersList = [
+  {
+    id: "3",
+    name: "User Three",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isFollowing: true,
+  },
+  {
+    id: "4",
+    name: "User Four",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isFollowing: false,
+  },
+];
+
 const UserProfile = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [oldPassword, setOldPassword] = useState("");
@@ -83,41 +177,6 @@ const UserProfile = () => {
   } = useUpdateUserProfile(userInfo?._id || "");
 
   // console.log("updated user: ", updatedUser);
-
-  const [following, setFollowing] = useState<User[]>([
-    {
-      id: "1",
-      name: "User One",
-      profilePhoto:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      isFollowing: true,
-    },
-    {
-      id: "2",
-      name: "User Two",
-      profilePhoto:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      isFollowing: false,
-    },
-  ]);
-
-  const [followers, setFollowers] = useState<User[]>([
-    {
-      id: "3",
-      name: "User Three",
-      profilePhoto:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      isFollowing: true,
-    },
-    {
-      id: "4",
-      name: "User Four",
-      profilePhoto:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      isFollowing: false,
-    },
-    // Add more followers here
-  ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -166,14 +225,14 @@ const UserProfile = () => {
 
     console.log("update user:", formData);
 
-    // if (
-    //   formData.name.length ||
-    //   formData.phone.length ||
-    //   formData.address.length ||
-    //   formData.profilePhoto.length
-    // ) {
-    //   updateUserProfile(formData);
-    // }
+    if (
+      formData.name.length ||
+      formData.phone.length ||
+      formData.address.length ||
+      formData.profilePhoto.length
+    ) {
+      updateUserProfile(formData);
+    }
 
     if (isUpdateProfileTrue) {
       toast.success("Profile updated");
@@ -182,12 +241,11 @@ const UserProfile = () => {
     setErrorMessage("");
   };
 
-  const handleFollowToggle = (id: string) => {
-    setFollowing((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, isFollowing: !user.isFollowing } : user
-      )
-    );
+  const handleFollowUser = (id: string) => {
+    console.log("followUser:", id);
+  };
+  const handleUnFollowToggle = (id: string) => {
+    console.log("UnFollowUser:", id);
   };
 
   const handleVerification = () => {
@@ -234,6 +292,45 @@ const UserProfile = () => {
                   </button>
                 )}
               </div>
+
+              {/* Follow suggession  */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                className="container mx-auto py-6 xl:px-16 lg:px-16 md:px-8 px-6"
+              >
+                <h2 className="text-xl font-semibold mb-4">
+                  Follow Other user
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {followSuggestions?.map((suggestion) => (
+                    <div
+                      key={suggestion?._id}
+                      className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg"
+                    >
+                      <Image
+                        src={suggestion.profilePhoto}
+                        alt="Profile Picture"
+                        width={80}
+                        height={80}
+                        className="rounded-full mb-4 shadow-lg"
+                      />
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {suggestion.name}
+                      </h3>
+                      <button
+                        onClick={() => handleFollowUser(suggestion?._id)}
+                        className="px-4 py-1 mt-1 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                      >
+                        Follow
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* user info and post layout */}
 
               <div className="bg-zinc-100 py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
                 {/* update user INfo */}
@@ -337,8 +434,13 @@ const UserProfile = () => {
                 <div className="xl:w-[60%] lg:w-[60%] md:w-[70%] w-full">
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Following</h2>
-                    <div className="flex flex-wrap gap-4">
-                      {following.map((user) => (
+                    <motion.div
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1 }}
+                      className="flex flex-wrap gap-4"
+                    >
+                      {followingList.map((user) => (
                         <div
                           key={user.id}
                           className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
@@ -353,7 +455,7 @@ const UserProfile = () => {
                           <div>
                             <p>{user.name}</p>
                             <button
-                              onClick={() => handleFollowToggle(user.id)}
+                              onClick={() => handleUnFollowToggle(user.id)}
                               className="text-blue-500 text-sm hover:underline hover:text-blue-700"
                             >
                               Unfollow
@@ -361,14 +463,17 @@ const UserProfile = () => {
                           </div>
                         </div>
                       ))}
-                    </div>
+                    </motion.div>
                   </div>
 
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Followers</h2>
                     <div className="flex flex-wrap gap-4">
-                      {followers.map((user) => (
-                        <div
+                      {followersList?.map((user) => (
+                        <motion.div
+                          initial={{ opacity: 0, y: 40 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 1 }}
                           key={user.id}
                           className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                         >
@@ -380,7 +485,7 @@ const UserProfile = () => {
                             className="rounded-full"
                           />
                           <span>{user.name}</span>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>

@@ -24,7 +24,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const { user: userDetails, setIsLoading: userLoading } = useUser();
 
-  // console.log("saved user details:", userDetails);
+  console.log("saved user details:", userDetails);
 
   const handleLogout = () => {
     logout();

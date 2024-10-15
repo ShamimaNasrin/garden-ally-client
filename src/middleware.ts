@@ -9,7 +9,13 @@ type Role = keyof typeof roleBasedRoutes;
 
 const roleBasedRoutes = {
   user: ["/news-feed", "/user-dashboard", "/user-profile"],
-  admin: ["/admin-profile", "/admin-dashboard"],
+  admin: [
+    "/admin-profile",
+    "/admin-dashboard",
+    "/admin-dashboard/user-management",
+    "/admin-dashboard/payment-history",
+    "/admin-dashboard/content-management",
+  ],
 };
 
 // This function can be marked `async` if using `await` inside
@@ -51,6 +57,9 @@ export const config = {
     "/user-profile",
     "/admin-profile",
     "/admin-dashboard",
+    "/admin-dashboard/user-management",
+    "/admin-dashboard/payment-history",
+    "/admin-dashboard/content-management",
     "/login",
     "/register",
   ],
