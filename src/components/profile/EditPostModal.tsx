@@ -1,9 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TPostCard } from "./PostCard";
 import { toast } from "react-hot-toast";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import UploadImgToImgBB from "./UploadImgToImgBB";
+import { categoryList } from "./AddPostModal";
 
 type EditPostModalProps = {
   post: TPostCard;
@@ -12,13 +17,16 @@ type EditPostModalProps = {
 
 type FormData = {
   title: string;
-  description: string;
+  // description: string;
   imageUrl: string;
   category: string;
   isPremium: boolean;
 };
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
+  const [editorHtml, setEditorHtml] = useState<string>(post.description || "");
   const {
     register,
     handleSubmit,
@@ -27,8 +35,6 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
   } = useForm<FormData>({
     defaultValues: {
       title: post.title,
-      description: post.description,
-      imageUrl: post.imageUrl,
       category: post.category,
       isPremium: post.isPremium,
     },
@@ -36,13 +42,38 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
 
   useEffect(() => {
     setValue("title", post.title);
-    setValue("description", post.description);
-    setValue("imageUrl", post.imageUrl);
+    setValue("category", post.category);
     setValue("isPremium", post.isPremium);
   }, [post, setValue]);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     console.log(data);
+
+    if (data.imageUrl && data.imageUrl.length) {
+      console.log("default img:", data.imageUrl);
+      try {
+        const file = data.imageUrl[0] as any;
+        const imgBBUrl = await UploadImgToImgBB(file);
+        data.imageUrl = imgBBUrl;
+      } catch (error: any) {
+        toast.error(error.data.message, { duration: 1000 });
+        return;
+      }
+    } else {
+      data.imageUrl = "";
+    }
+
+    const postData = {
+      title: data.title || post.title,
+      description: editorHtml || post.description,
+      imageUrl: data.imageUrl || post.imageUrl,
+      category: data.category || post.category,
+      isPremium: data.isPremium || post.isPremium,
+      authorId: "authorId",
+    };
+
+    console.log("postdata:", postData);
+
     toast.success("Post updated successfully!");
     closeModal(false);
   };
@@ -58,7 +89,7 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
           <input
             className="w-full p-2 mb-4 border rounded"
             placeholder="Title"
-            {...register("title", { required: "Title is required" })}
+            {...register("title")}
           />
           {errors.title && (
             <p className="text-red-500 text-sm">{errors.title.message}</p>
@@ -67,24 +98,22 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
           <label className="block text-gray-700 font-semibold mb-1">
             Description
           </label>
-          <textarea
-            className="w-full p-2 mb-4 border rounded"
-            placeholder="Description"
-            {...register("description", {
-              required: "Description is required",
-            })}
+
+          <ReactQuill
+            value={editorHtml}
+            onChange={setEditorHtml}
+            className="border text-black rounded-md"
           />
-          {errors.description && (
-            <p className="text-red-500 text-sm">{errors.description.message}</p>
-          )}
 
           <label className="block text-gray-700 font-semibold mb-1">
-            Image URL
+            Image
           </label>
           <input
+            type="file"
             className="w-full p-2 mb-4 border rounded"
+            accept="image/*"
             placeholder="Image URL"
-            {...register("imageUrl", { required: "Image URL is required" })}
+            {...register("imageUrl")}
           />
           {errors.imageUrl && (
             <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
@@ -94,17 +123,27 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
             Category
           </label>
           <select
+            defaultValue={post.category}
             className="w-full p-2 mb-4 border rounded"
             {...register("category")}
           >
-            <option>Vegetables</option>
-            <option>Flowers</option>
-            <option>Landscaping</option>
-            <option>Indoor Plants</option>
+            <option value="" disabled className="text-black">
+              Select Category
+            </option>
+            {categoryList.map((cat) => (
+              <option key={cat} value={cat} className="text-gray-800">
+                {cat}
+              </option>
+            ))}
           </select>
 
           <label className="flex items-center space-x-2 mb-4">
-            <input type="checkbox" {...register("isPremium")} />
+            <input
+              type="checkbox"
+              {...register("isPremium")}
+              defaultChecked={post.isPremium}
+            />
+
             <span>Premium</span>
           </label>
 

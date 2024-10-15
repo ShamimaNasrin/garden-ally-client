@@ -32,6 +32,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const AddPostModal = ({ closeModal }: AddPostModalProps) => {
   const [editorHtml, setEditorHtml] = useState<string>("");
+
   const {
     register,
     handleSubmit,
