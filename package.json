@@ -13,7 +13,6 @@
     "axios": "^1.7.7",
     "framer-motion": "^11.11.7",
     "jwt-decode": "^4.0.0",
-    "nexios-http": "^1.1.21",
     "next": "14.2.15",
     "quill": "^2.0.2",
     "react": "^18",
