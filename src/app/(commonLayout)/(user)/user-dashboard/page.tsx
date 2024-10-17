@@ -2,9 +2,10 @@
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "@/components/profile/PostCard";
-import { useUser } from "@/context/user.provider";
+// import { useUser } from "@/context/user.provider";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const posts = [
   {
@@ -70,7 +71,18 @@ const followersList = [
 ];
 
 const UserDashboard = () => {
-  const { user: userInfo, isLoading: userLoading } = useUser();
+  const [userLoading, setUserLoading] = useState(false);
+
+  // const { user: userInfo, isLoading: userLoading } = useUser();
+
+  const userInfo = {
+    name: "user1",
+    phone: "078262",
+    address: "bd",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isVerified: false,
+  };
   console.log("current user: ", userInfo);
   return (
     <div className=" mx-auto">

@@ -4,48 +4,13 @@
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 
-import axiosInstance from "@/lib/AxiosInstance";
-import { TRegisterFormInput } from "@/app/(commonLayout)/register/page";
-import { TLoginFormInput } from "@/app/(commonLayout)/login/page";
-import { TForgotPasswordInput, TResetPasswordInput } from "@/types";
-
-export const registerUser = async (userData: TRegisterFormInput) => {
-  try {
-    const { data } = await axiosInstance.post("/auth/signup", userData);
-
-    // console.log("registerUser authservice:", data);
-
-    if (data.success) {
-      cookies().set("accessToken", data?.data?.accessToken);
-      cookies().set("refreshToken", data?.data?.refreshToken);
-    }
-
-    return data;
-  } catch (error: any) {
-    throw new Error(error);
-  }
+export const setTokenToCookies = (token: string) => {
+  cookies().set("accessToken", token);
 };
 
-export const loginUser = async (userData: TLoginFormInput) => {
-  try {
-    const { data } = await axiosInstance.post("/auth/login", userData);
-
-    // console.log("loginUser authservice:", data);
-
-    if (data.success) {
-      cookies().set("accessToken", data?.data?.accessToken);
-      cookies().set("refreshToken", data?.data?.refreshToken);
-    }
-
-    return data;
-  } catch (error: any) {
-    throw new Error(error);
-  }
-};
-
-export const logout = () => {
-  cookies().delete("accessToken");
-  cookies().delete("refreshToken");
+export const removeTokenFromCookies = () => {
+  cookies().set("accessToken", "", { expires: new Date(0) });
+  cookies().set("refreshToken", "", { expires: new Date(0) });
 };
 
 export const getCurrentUser = async () => {
@@ -75,51 +40,4 @@ export const getCurrentUser = async () => {
   }
 
   return decodedToken;
-};
-
-export const getNewAccessToken = async () => {
-  try {
-    const refreshToken = cookies().get("refreshToken")?.value;
-
-    const res = await axiosInstance({
-      url: "/auth/refresh-token",
-      method: "POST",
-      withCredentials: true,
-      headers: {
-        cookie: `refreshToken=${refreshToken}`,
-      },
-    });
-
-    return res.data;
-  } catch (error) {
-    console.log("error:", error);
-    throw new Error("Failed to get new access token");
-  }
-};
-
-export const forgotPassword = async (email: TForgotPasswordInput) => {
-  try {
-    const res = await axiosInstance.post("/auth/forget-password", email);
-    console.log("forgotPassword res:", res);
-    return res;
-  } catch (error: any) {
-    console.error(
-      "Forgot Password Error:",
-      error.response?.data || error.message
-    );
-    throw new Error(error.response?.data?.message || error.message);
-  }
-};
-
-export const resetPassword = async (userData: TResetPasswordInput) => {
-  const response = await axiosInstance.post(
-    "/auth/reset-password",
-    { userId: userData.userId, newPassword: userData.newPassword },
-    {
-      headers: {
-        authorization: userData.token,
-      },
-    }
-  );
-  return response.data;
 };

@@ -3,11 +3,15 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useUserLogin } from "@/hooks/auth.hook";
-import LoadingSpinner from "@/components/UI/LoadingSpinner";
-import { useUser } from "@/context/user.provider";
+// import { useState } from "react";
+// import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { setUser, TAuthUser } from "@/redux/features/auth/authSlice";
+import { tokenVerify } from "@/lib/tokenVerify";
+import { useAppDispatch } from "@/redux/hooks";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { setTokenToCookies } from "@/service/AuthServices";
 
 export interface TLoginFormInput {
   email: string;
@@ -15,36 +19,51 @@ export interface TLoginFormInput {
 }
 
 const LoginPage = () => {
+  const dispatch = useAppDispatch();
+  const [login] = useLoginMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<TLoginFormInput>();
+  // const [isLoading, setIsLoading] = useState(false);
 
-  // const searchParams = useSearchParams();
   const router = useRouter();
-  const { setIsLoading: userLoading } = useUser();
-
-  // const redirect = searchParams.get("redirect");
-
-  const { mutate: handleUserLogin, isPending, isSuccess } = useUserLogin();
 
   const onSubmit: SubmitHandler<TLoginFormInput> = async (data) => {
-    console.log(data);
-    handleUserLogin(data);
-    userLoading(true);
+    // console.log(data);
+
+    const toastId = toast.loading("Logging in");
+    // console.log(data);
+    try {
+      const userInfo = {
+        email: data.email,
+        password: data.password,
+      };
+      const res = await login(userInfo).unwrap();
+      // console.log("res:", res);
+      setTokenToCookies(res.data.accessToken);
+      const user = tokenVerify(res.data.accessToken) as TAuthUser;
+      console.log("login user :", user);
+      dispatch(setUser({ user: res.data.user, token: res.data.accessToken }));
+      toast.success("Logged in", { id: toastId, duration: 2000 });
+      router.push("/");
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong", { id: toastId, duration: 2000 });
+    }
   };
 
-  useEffect(() => {
-    if (!isPending && isSuccess) {
-      router.push("/");
-      // if (redirect) {
-      //   router.push(redirect);
-      // } else {
-      //   router.push("/");
-      // }
-    }
-  }, [isPending, isSuccess]);
+  // useEffect(() => {
+  //   if (!isPending && isSuccess) {
+  //     router.push("/");
+  //     // if (redirect) {
+  //     //   router.push(redirect);
+  //     // } else {
+  //     //   router.push("/");
+  //     // }
+  //   }
+  // }, [isPending, isSuccess]);
 
   const handleForgotPassword = () => {
     router.push("/forgot-password");
@@ -52,7 +71,7 @@ const LoginPage = () => {
 
   return (
     <>
-      {isPending && <LoadingSpinner />}
+      {/* {isLoading && <LoadingSpinner />} */}
       <div className="flex items-center justify-center min-h-screen bg-gray-100 ">
         <form
           onSubmit={handleSubmit(onSubmit)}

@@ -1,13 +1,19 @@
 "use client";
 
 import { protectedRoutes } from "@/constant";
-import { useUser } from "@/context/user.provider";
-import { logout } from "@/service/AuthServices";
+import { tokenVerify } from "@/lib/tokenVerify";
+import { logOut, useCurrentToken } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { removeTokenFromCookies } from "@/service/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { RiCloseLine, RiUserLine } from "react-icons/ri";
+
+type TLoginUser = {
+  role: "user" | "admin";
+};
 
 const Navbar = () => {
   const links = [
@@ -22,16 +28,33 @@ const Navbar = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const { user: userDetails, setIsLoading: userLoading } = useUser();
 
-  console.log("saved user details:", userDetails);
+  // const userDetails = {
+  //   name: "shamima",
+  //   role: "user",
+  // };
+
+  const dispatch = useAppDispatch();
+  const currentToken = useAppSelector(useCurrentToken);
+  const [userDetails, setUserDetails] = useState<TLoginUser | null>(null);
+
+  useEffect(() => {
+    if (currentToken) {
+      const decodedUser = tokenVerify(currentToken);
+      setUserDetails(decodedUser);
+    } else {
+      setUserDetails(null);
+    }
+  }, [currentToken]);
+
+  // console.log("saved user details:", userDetails);
 
   const handleLogout = () => {
-    logout();
-    userLoading(true);
+    dispatch(logOut());
+    removeTokenFromCookies();
 
     if (protectedRoutes.some((route) => pathname.match(route))) {
-      router.push("/");
+      router.push("/login");
     }
     setDropdownOpen(false);
   };

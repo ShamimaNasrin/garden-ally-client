@@ -1,11 +1,12 @@
 "use client";
 
-import LoadingSpinner from "@/components/UI/LoadingSpinner";
-import { useUserRegistration } from "@/hooks/auth.hook";
+// import LoadingSpinner from "@/components/UI/LoadingSpinner";
+import { useSignupMutation } from "@/redux/features/auth/authApi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+// import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export interface TRegisterFormInput {
   name: string;
@@ -13,10 +14,10 @@ export interface TRegisterFormInput {
   password: string;
   phone: string;
   address: string;
-  profilePhoto: string;
+  imageUrl: string;
 }
 
-// const profilePhoto =  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+// const imageUrl =  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
 const SignupPage = () => {
   const {
@@ -25,33 +26,37 @@ const SignupPage = () => {
     formState: { errors },
   } = useForm<TRegisterFormInput>();
 
-  const {
-    mutate: handleUserRegistration,
-    isPending,
-    isSuccess,
-  } = useUserRegistration();
+  const [signup] = useSignupMutation();
+
+  // const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   const onSubmit: SubmitHandler<TRegisterFormInput> = async (data) => {
-    //   console.log(data);
-    const userData = {
+    // console.log(data);
+    const userInfo = {
       ...data,
       role: "user",
     };
 
-    handleUserRegistration(userData);
+    try {
+      console.log("signup", userInfo);
+      await signup(userInfo).unwrap();
+      toast.success("Sign Up successful");
+      router.push("/login");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to sign up");
+    }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/login");
-    }
-  }, [isSuccess, router]);
+  // useEffect(() => {
+  //   router.push("/login");
+  // }, [router]);
 
   return (
     <>
-      {isPending && <LoadingSpinner />}
+      {/* {isLoading && <LoadingSpinner />} */}
       <div className="flex items-center justify-center min-h-screen bg-gray-100 py-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -158,14 +163,14 @@ const SignupPage = () => {
           <div>
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="profilePhoto"
+              htmlFor="imageUrl"
             >
               Image URL
             </label>
             <input
               type="text"
-              id="profilePhoto"
-              {...register("profilePhoto", {
+              id="imageUrl"
+              {...register("imageUrl", {
                 required: "Image url is required",
               })}
               className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${

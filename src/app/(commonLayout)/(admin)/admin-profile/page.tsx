@@ -2,9 +2,9 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { useUser } from "@/context/user.provider";
+// import { useUser } from "@/context/user.provider";
 import { TUserForm } from "../../(user)/user-profile/page";
-import { useUpdateUserProfile } from "@/hooks/user.hook";
+// import { useUpdateUserProfile } from "@/hooks/user.hook";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 
@@ -19,9 +19,19 @@ const AdminProfile = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [userLoading, setUserLoading] = useState(false);
 
-  const { user: userInfo, isLoading: userLoading } = useUser();
-  console.log("current user: ", userInfo);
+  // const { user: userInfo, isLoading: userLoading } = useUser();
+  // console.log("current user: ", userInfo);
+
+  const userInfo = {
+    name: "user1",
+    phone: "078262",
+    address: "bd",
+    profilePhoto:
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    isVerified: false,
+  };
 
   const [formData, setFormData] = useState<TUserForm>({
     name: userInfo?.name || "",
@@ -30,11 +40,11 @@ const AdminProfile = () => {
     profilePhoto: userInfo?.profilePhoto || "",
   });
 
-  const {
-    data: updatedUser,
-    mutate: updateUserProfile,
-    isSuccess: isUpdateProfileTrue,
-  } = useUpdateUserProfile(userInfo?._id || "");
+  // const {
+  //   data: updatedUser,
+  //   mutate: updateUserProfile,
+  //   isSuccess: isUpdateProfileTrue,
+  // } = useUpdateUserProfile(userInfo?._id || "");
 
   // console.log("updated user: ", updatedUser);
 
@@ -52,7 +62,7 @@ const AdminProfile = () => {
   const handleUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("userLoading:", userLoading);
+    // console.log("userLoading:", userLoading);
 
     if (formData.name.length === 0) {
       console.log("name:", userInfo.name);
@@ -91,12 +101,12 @@ const AdminProfile = () => {
       formData.address.length ||
       formData.profilePhoto.length
     ) {
-      updateUserProfile(formData);
+      // updateUserProfile(formData);
     }
 
-    if (isUpdateProfileTrue) {
-      toast.success("Profile updated");
-    }
+    // if (isUpdateProfileTrue) {
+    //   toast.success("Profile updated");
+    // }
     // If all URLs are valid, proceed with form submission
     setErrorMessage("");
   };

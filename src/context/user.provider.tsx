@@ -12,7 +12,7 @@ import {
 } from "react";
 
 import { IUser } from "../types";
-import { getCurrentUser } from "../service/AuthServices";
+// import { getCurrentUser } from "../service/AuthServices";
 
 interface IUserProviderValues {
   user: IUser | any;
@@ -28,7 +28,12 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleUser = async () => {
-    const user = await getCurrentUser();
+    // const user = await getCurrentUser();
+
+    const user = {
+      name: "shamima",
+      role: "user",
+    };
 
     setUser(user);
     setIsLoading(false);
