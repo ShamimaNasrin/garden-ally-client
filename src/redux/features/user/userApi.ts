@@ -20,7 +20,21 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+
+    // Query to fetch all user
+    getFollowSuggestion: builder.query({
+      query: ({ userId, updatedInfo }) => ({
+        url: `/followSuggestion/${userId}`,
+        method: "GET",
+        body: updatedInfo,
+      }),
+      providesTags: ["user"],
+    }),
   }),
 });
 
-export const { useFetchAllUserQuery, useModifyUserRoleMutation } = userApi;
+export const {
+  useFetchAllUserQuery,
+  useModifyUserRoleMutation,
+  useGetFollowSuggestionQuery,
+} = userApi;
