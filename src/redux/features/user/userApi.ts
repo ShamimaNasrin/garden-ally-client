@@ -120,6 +120,15 @@ const userApi = baseApi.injectEndpoints({
 
 export const {
   useFetchAllUserQuery,
+  useFetchUserByIdQuery,
+  useFetchUserByEmailQuery,
   useModifyUserRoleMutation,
+  useUpdateUserProfileMutation,
   useGetFollowSuggestionQuery,
+  useAddFollowMutation,
+  useUnFollowMutation,
+  useAddFavoritePostMutation,
+  useRemoveFavoritePostMutation,
+  useGetAllFavoritePostsQuery,
+  useVerifyProfileMutation,
 } = userApi;

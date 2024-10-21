@@ -38,7 +38,76 @@ const postApi = baseApi.injectEndpoints({
       }),
       providesTags: ["post"],
     }),
+
+    // Mutation for deleting a post by ID
+    deletePost: builder.mutation({
+      query: (postId) => ({
+        url: `/post/${postId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["post"],
+    }),
+
+    // Mutation to update post
+    updateAPost: builder.mutation({
+      query: ({ postId, updatedInfo }) => ({
+        url: `post/${postId}`,
+        method: "PATCH",
+        body: updatedInfo,
+      }),
+      invalidatesTags: ["post"],
+    }),
+
+    // Mutation for handling upvote and downvote
+    votePost: builder.mutation({
+      query: ({ postId, userId, voteType }) => ({
+        url: `/post/vote/${postId}`,
+        method: "POST",
+        body: { userId, voteType },
+      }),
+      invalidatesTags: ["post"],
+    }),
+
+    // Mutation to add a comment
+    addComment: builder.mutation({
+      query: ({ postId, commentData }) => ({
+        url: `/post/add-comment/${postId}`,
+        method: "POST",
+        body: commentData,
+      }),
+      invalidatesTags: ["post"],
+    }),
+
+    // Mutation to update a comment
+    updateComment: builder.mutation({
+      query: ({ postId, commentId, updatedComment }) => ({
+        url: `/post/${postId}/comment/${commentId}`,
+        method: "PATCH",
+        body: updatedComment,
+      }),
+      invalidatesTags: ["post"],
+    }),
+
+    // Mutation to delete a comment
+    deleteComment: builder.mutation({
+      query: ({ postId, commentId }) => ({
+        url: `/post/${postId}/comment/${commentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["post"],
+    }),
   }),
 });
 
-export const {} = postApi;
+export const {
+  useCreatePostMutation,
+  useGetAllPostsQuery,
+  useGetSinglePostQuery,
+  useGetMyPostsQuery,
+  useDeletePostMutation,
+  useUpdateAPostMutation,
+  useVotePostMutation,
+  useAddCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+} = postApi;
