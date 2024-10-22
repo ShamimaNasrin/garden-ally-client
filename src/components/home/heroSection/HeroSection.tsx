@@ -10,9 +10,8 @@ const HeroSection = () => {
       <Image
         src={bannerimg}
         alt="Banner background"
-        layout="fill"
-        objectFit="cover"
-        className="opacity-80"
+        fill
+        className="object-cover opacity-80" // Use object-cover from Tailwind CSS
         placeholder="blur"
       />
       <div className="absolute inset-0 bg-black opacity-50"></div>
