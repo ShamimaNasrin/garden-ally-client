@@ -36,6 +36,9 @@ const Navbar = () => {
 
   const dispatch = useAppDispatch();
   const currentToken = useAppSelector(useCurrentToken);
+  // const currentUser = useAppSelector(useCurrentUser);
+
+  // console.log("currentUser: ", currentUser);
   const [userDetails, setUserDetails] = useState<TLoginUser | null>(null);
 
   useEffect(() => {
@@ -47,7 +50,7 @@ const Navbar = () => {
     }
   }, [currentToken]);
 
-  // console.log("saved user details:", userDetails);
+  console.log("saved user details:", userDetails);
 
   const handleLogout = () => {
     dispatch(logOut());

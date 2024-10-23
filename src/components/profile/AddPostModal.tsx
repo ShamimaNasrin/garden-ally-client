@@ -8,6 +8,9 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import UploadImgToImgBB from "./UploadImgToImgBB";
 import "react-quill/dist/quill.snow.css";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { useCreatePostMutation } from "@/redux/features/post/postApi";
 
 export const categoryList = [
   "Vegetables",
@@ -23,7 +26,7 @@ type AddPostModalProps = {
 type FormData = {
   title: string;
   // description: string;
-  imageUrl: string;
+  images: string;
   category: string;
   isPremium: boolean;
 };
@@ -31,7 +34,11 @@ type FormData = {
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const AddPostModal = ({ closeModal }: AddPostModalProps) => {
+  const currentUser = useAppSelector(useCurrentUser);
   const [editorHtml, setEditorHtml] = useState<string>("");
+  const [createPost] = useCreatePostMutation();
+
+  // console.log("currentUser: ", currentUser);
 
   const {
     register,
@@ -40,31 +47,40 @@ const AddPostModal = ({ closeModal }: AddPostModalProps) => {
   } = useForm<FormData>();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
+    // console.log(data);
 
-    if (data.imageUrl && data.imageUrl.length) {
+    if (data.images && data.images.length) {
       try {
-        const file = data.imageUrl[0] as any;
+        const file = data.images[0] as any;
         const imgBBUrl = await UploadImgToImgBB(file);
-        data.imageUrl = imgBBUrl;
+        data.images = imgBBUrl;
       } catch (error: any) {
         toast.error(error.data.message, { duration: 1000 });
         return;
       }
     } else {
-      data.imageUrl = "";
+      data.images = "";
     }
 
     const postData = {
       title: data.title,
       description: editorHtml,
-      imageUrl: data.imageUrl,
+      images: data.images,
       category: data.category,
       isPremium: data.isPremium,
-      authorId: "authorId",
+      authorId: currentUser?._id || "",
     };
 
     console.log("postdata:", postData);
+
+    try {
+      await createPost(postData).unwrap();
+      toast.success("Post successfully created");
+      closeModal(false);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to create a post");
+    }
   };
 
   return (
@@ -112,10 +128,10 @@ const AddPostModal = ({ closeModal }: AddPostModalProps) => {
             className="w-full p-2 mb-4 border rounded"
             accept="image/*"
             placeholder="Image URL"
-            {...register("imageUrl", { required: "Image is required" })}
+            {...register("images", { required: "Image is required" })}
           />
-          {errors.imageUrl && (
-            <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
+          {errors.images && (
+            <p className="text-red-500 text-sm">{errors.images.message}</p>
           )}
 
           <label className="block text-gray-700 font-semibold mb-1">

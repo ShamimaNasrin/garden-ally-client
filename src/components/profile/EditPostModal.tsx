@@ -18,7 +18,7 @@ type EditPostModalProps = {
 type FormData = {
   title: string;
   // description: string;
-  imageUrl: string;
+  images: string;
   category: string;
   isPremium: boolean;
 };
@@ -49,24 +49,24 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     console.log(data);
 
-    if (data.imageUrl && data.imageUrl.length) {
-      console.log("default img:", data.imageUrl);
+    if (data.images && data.images.length) {
+      console.log("default img:", data.images);
       try {
-        const file = data.imageUrl[0] as any;
+        const file = data.images[0] as any;
         const imgBBUrl = await UploadImgToImgBB(file);
-        data.imageUrl = imgBBUrl;
+        data.images = imgBBUrl;
       } catch (error: any) {
         toast.error(error.data.message, { duration: 1000 });
         return;
       }
     } else {
-      data.imageUrl = "";
+      data.images = "";
     }
 
     const postData = {
       title: data.title || post.title,
       description: editorHtml || post.description,
-      imageUrl: data.imageUrl || post.imageUrl,
+      images: data.images || post.images,
       category: data.category || post.category,
       isPremium: data.isPremium || post.isPremium,
       authorId: "authorId",
@@ -113,10 +113,10 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
             className="w-full p-2 mb-4 border rounded"
             accept="image/*"
             placeholder="Image URL"
-            {...register("imageUrl")}
+            {...register("images")}
           />
-          {errors.imageUrl && (
-            <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
+          {errors.images && (
+            <p className="text-red-500 text-sm">{errors.images.message}</p>
           )}
 
           <label className="block text-gray-700 font-semibold mb-1">
