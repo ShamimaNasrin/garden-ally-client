@@ -12,6 +12,9 @@ import {
 } from "react-icons/ai";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { TNewsPost } from "@/types";
 
 export type TPostCard = {
   id: string;
@@ -28,18 +31,18 @@ export type TPostCard = {
 };
 
 type TPostProps = {
-  userId: string;
-  post: TPostCard;
+  post: TNewsPost;
 };
 
-const PostCard = ({ userId, post }: TPostProps) => {
+const PostCard = ({ post }: TPostProps) => {
+  const currentUser = useAppSelector(useCurrentUser);
   const [isLiked, setIsLiked] = useState(false);
   const [isUnLiked, setIsUnLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
   // share copy to clipboard feature
   const handleShare = async () => {
-    const postUrl = `${window.location.origin}/news-feed/${post.id}`;
+    const postUrl = `${window.location.origin}/news-feed/${post._id}`;
     try {
       await navigator.clipboard.writeText(postUrl);
       toast.success("Post link copied to clipboard!");
@@ -61,7 +64,7 @@ const PostCard = ({ userId, post }: TPostProps) => {
               height={40}
               className="rounded-full"
             />
-            <p>{post.authorName}</p>
+            <p>{post?.authorId?.name}</p>
           </div>
 
           <div className="flex justify-center items-center">
@@ -72,8 +75,8 @@ const PostCard = ({ userId, post }: TPostProps) => {
               onClick={() => setIsFavorited(!isFavorited)}
               disabled={
                 post?.isPremium &&
-                !post?.isUserVerified &&
-                userId !== post?.authorId
+                !currentUser?.isVerified &&
+                currentUser?._id !== post?.authorId?._id
               }
             >
               {isFavorited ? <FaHeart /> : <FaRegHeart />}{" "}
@@ -85,13 +88,13 @@ const PostCard = ({ userId, post }: TPostProps) => {
           <div
             className={
               post?.isPremium &&
-              !post?.isUserVerified &&
-              userId !== post?.authorId
+              !currentUser?.isVerified &&
+              currentUser?._id !== post?.authorId?._id
                 ? "blur-sm"
                 : ""
             }
           >
-            <Link href={`/news-feed/${post.id}`}>
+            <Link href={`/news-feed/${post._id}`}>
               <div>
                 <h3 className="text-lg font-semibold my-1">{post?.title}</h3>
                 <p className="text-gray-600 text-sm mb-2">
@@ -148,8 +151,8 @@ const PostCard = ({ userId, post }: TPostProps) => {
           </div>
 
           {post?.isPremium &&
-            !post?.isUserVerified &&
-            userId !== post?.authorId && (
+            !currentUser?.isVerified &&
+            currentUser?._id !== post?.authorId?._id && (
               <div className="absolute inset-0 bg-white/30 text-lg flex items-center justify-center text-black font-bold">
                 Premium Content
               </div>

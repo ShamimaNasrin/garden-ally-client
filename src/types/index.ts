@@ -47,3 +47,28 @@ export type TResetPasswordInput = {
   newPassword: string;
   token: string;
 };
+
+// news feed
+type TAuthor = {
+  _id: string;
+  name: string;
+  imageUrl: string;
+};
+
+export type TNewsPost = {
+  _id: string;
+  authorId: TAuthor;
+  title: string;
+  description: string;
+  images: string;
+  category: string;
+  upVoteNumber: number;
+  downVoteNumber: number;
+  upVoterList: string[];
+  downVoterList: string[];
+  isPremium: boolean;
+  isDeleted?: boolean;
+  comments: string[];
+  createdAt: string;
+  updatedAt: string;
+};

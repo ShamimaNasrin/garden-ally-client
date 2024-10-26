@@ -503,11 +503,11 @@ const UserProfile = () => {
 
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Posts</h2>
-                    <div className="">
+                    {/* <div className="">
                       {posts.map((post) => (
                         <PostCard key={post.id} userId="user1" post={post} />
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

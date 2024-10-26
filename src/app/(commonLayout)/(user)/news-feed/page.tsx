@@ -2,57 +2,72 @@
 "use client";
 import AddPostModal from "@/components/profile/AddPostModal";
 import PostCard from "@/components/profile/PostCard";
-import React, { useState } from "react";
+import LoadingSpinner from "@/components/UI/LoadingSpinner";
+import NoDataFound from "@/components/UI/NoDataFound";
+import { useGetAllPostsQuery } from "@/redux/features/post/postApi";
+import { TNewsPost } from "@/types";
+import React, { useState, useEffect, useCallback } from "react";
 
-const posts = [
-  {
-    id: "1",
-    authorId: "user1",
-    authorName: "John",
-    title: "Post 1",
-    description: "This is the first post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: true,
-    isUserVerified: false,
-    category: "Flowers",
-    upVoteNumber: 10,
-    downVoteNumber: 20,
-  },
-  {
-    id: "2",
-    authorId: "user2",
-    authorName: "Alex",
-    title: "Post 2",
-    description: "This is the second post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 90,
-    downVoteNumber: 5,
-  },
-];
+// const posts = [
+//   {
+//     id: "1",
+//     authorId: "user1",
+//     authorName: "John",
+//     title: "Post 1",
+//     description: "This is the first post.",
+//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+//     isPremium: true,
+//     isUserVerified: false,
+//     category: "Flowers",
+//     upVoteNumber: 10,
+//     downVoteNumber: 20,
+//   },
+//   {
+//     id: "2",
+//     authorId: "user2",
+//     authorName: "Alex",
+//     title: "Post 2",
+//     description: "This is the second post.",
+//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+//     isPremium: false,
+//     isUserVerified: false,
+//     category: "Vegetables",
+//     upVoteNumber: 90,
+//     downVoteNumber: 5,
+//   },
+// ];
 
 const NewsFeedPage = () => {
   const [searchByTitle, setSearchByTitle] = useState("");
   const [searchByCategory, setSearchByCategory] = useState("");
   const [isAddPostModalOpen, setIsAddPostModalOpen] = useState(false);
 
+  // Dynamically build query parameters based on non-empty values
+  const queryParams: Record<string, string> = {};
+  if (searchByTitle) queryParams.searchTerm = searchByTitle;
+  if (searchByCategory) queryParams.category = searchByCategory;
+
+  console.log("queryParams:", queryParams);
+
+  const { data: postData, isLoading: postLoading } =
+    useGetAllPostsQuery(queryParams);
+
+  console.log("post data:", postData);
+
   // clear all filter
   const handleFilterClear = () => {
     setSearchByTitle("");
     setSearchByCategory("");
   };
+
   return (
     <div className="bg-zinc-100 py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
-      {/* filter */}
+      {/* Filter Section */}
       <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8 px-4 rounded-lg ">
         <div className="p-7 bg-white shadow-lg rounded-lg">
-          {/* Capacity range filter */}
+          {/* Category Filter */}
           <h4 className="font-bold text-lg  mt-2">By Category</h4>
           <div className="relative my-4">
-            {" "}
-            {/* Removed max-w-sm to allow full width */}
             <select
               value={searchByCategory}
               onChange={(e) => setSearchByCategory(e.target.value)}
@@ -61,10 +76,10 @@ const NewsFeedPage = () => {
               <option value="" disabled>
                 Select Category
               </option>
-              <option value="5">Vegetables</option>
-              <option value="10">Flowers</option>
-              <option value="20">Landscaping</option>
-              <option value="50">Indoor Plants</option>
+              <option value="Vegetables">Vegetables</option>
+              <option value="Flowers">Flowers</option>
+              <option value="Landscaping">Landscaping</option>
+              <option value="ndoor Plants">Indoor Plants</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <svg
@@ -77,8 +92,10 @@ const NewsFeedPage = () => {
             </div>
           </div>
 
-          {/* Search by name or keywords */}
-          <h4 className="font-bold text-lg  my-2">Search Post By Title</h4>
+          {/* Search by title or keywords */}
+          <h4 className="font-bold text-lg  my-2">
+            Search By Title or Keywords
+          </h4>
           <div>
             <input
               onChange={(e) => setSearchByTitle(e.target.value)}
@@ -116,9 +133,18 @@ const NewsFeedPage = () => {
       <div className="xl:w-[60%] lg:w-[60%] md:w-[70%] w-full">
         <div className="mt-8">
           <div className="">
-            {posts.map((post) => (
+            {/* {posts.map((post) => (
               <PostCard key={post.id} userId="user1" post={post} />
-            ))}
+            ))} */}
+            {postLoading ? (
+              <LoadingSpinner />
+            ) : postData?.data?.length ? (
+              postData?.data?.map((post: TNewsPost) => (
+                <PostCard key={post._id} post={post} />
+              ))
+            ) : (
+              <NoDataFound />
+            )}
           </div>
         </div>
       </div>

@@ -13,13 +13,56 @@ const postApi = baseApi.injectEndpoints({
     }),
 
     // Query to fetch all posts
+
+    // getAllPosts: builder.query({
+    //   query: (queryParams) => {
+    //     const searchParams = new URLSearchParams(queryParams).toString();
+    //     return {
+    //       url: `/post?${searchParams}`,
+    //       method: "GET",
+    //       // params: searchParams,
+    //     };
+    //   },
+    //   providesTags: ["post"],
+    // }),
+
     getAllPosts: builder.query({
-      query: () => ({
-        url: "/post",
-        method: "GET",
-      }),
+      query: (queryParams) => {
+        const searchParams = new URLSearchParams(queryParams).toString();
+        const url = searchParams ? `/post?${searchParams}` : `/post`;
+
+        return {
+          url,
+          method: "GET",
+        };
+      },
       providesTags: ["post"],
     }),
+
+    // fetchFilteredItems: builder.query({
+    //   query: (filterParams) => {
+    //     const searchParams = new URLSearchParams();
+    //     if (filterParams?.search)
+    //       searchParams.append("search", filterParams.search);
+    //     if (filterParams?.minPrice)
+    //       searchParams.append("minPrice", filterParams.minPrice);
+    //     if (filterParams?.maxPrice)
+    //       searchParams.append("maxPrice", filterParams.maxPrice);
+    //     if (filterParams?.minCapacity)
+    //       searchParams.append("minCapacity", filterParams.minCapacity);
+    //     if (filterParams?.maxCapacity)
+    //       searchParams.append("maxCapacity", filterParams.maxCapacity);
+    //     if (filterParams?.sortBy)
+    //       searchParams.append("sortBy", filterParams.sortBy);
+
+    //     return {
+    //       url: "/rooms",
+    //       method: "GET",
+    //       params: searchParams,
+    //     };
+    //   },
+    //   providesTags: ["room"],
+    // }),
 
     // Query to fetch a single post
     getSinglePost: builder.query({
