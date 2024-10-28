@@ -52,7 +52,7 @@ export type TResetPasswordInput = {
 type TAuthor = {
   _id: string;
   name: string;
-  imageUrl: string;
+  profilePhoto: string;
 };
 
 export type TNewsPost = {

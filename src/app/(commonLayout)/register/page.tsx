@@ -14,10 +14,10 @@ export interface TRegisterFormInput {
   password: string;
   phone: string;
   address: string;
-  imageUrl: string;
+  profilePhoto: string;
 }
 
-// const imageUrl =  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+// const profilePhoto =  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
 const SignupPage = () => {
   const {
@@ -163,14 +163,14 @@ const SignupPage = () => {
           <div>
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="imageUrl"
+              htmlFor="profilePhoto"
             >
               Image URL
             </label>
             <input
               type="text"
-              id="imageUrl"
-              {...register("imageUrl", {
+              id="profilePhoto"
+              {...register("profilePhoto", {
                 required: "Image url is required",
               })}
               className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${

@@ -16,20 +16,6 @@ import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { TNewsPost } from "@/types";
 
-export type TPostCard = {
-  id: string;
-  authorId: string;
-  authorName: string;
-  title: string;
-  description: string;
-  images: string;
-  isPremium: boolean;
-  isUserVerified: boolean;
-  upVoteNumber: number;
-  category: string;
-  downVoteNumber: number;
-};
-
 type TPostProps = {
   post: TNewsPost;
 };
@@ -97,9 +83,15 @@ const PostCard = ({ post }: TPostProps) => {
             <Link href={`/news-feed/${post._id}`}>
               <div>
                 <h3 className="text-lg font-semibold my-1">{post?.title}</h3>
-                <p className="text-gray-600 text-sm mb-2">
+                {/* <p className="text-gray-600 text-sm mb-2">
                   {post?.description}
-                </p>
+                </p> */}
+                <p
+                  className="text-gray-500 text-sm mb-2"
+                  dangerouslySetInnerHTML={{
+                    __html: post?.description,
+                  }}
+                ></p>
                 <Image
                   src={post?.images}
                   alt={post?.title}

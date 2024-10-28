@@ -47,12 +47,12 @@ const NewsFeedPage = () => {
   if (searchByTitle) queryParams.searchTerm = searchByTitle;
   if (searchByCategory) queryParams.category = searchByCategory;
 
-  console.log("queryParams:", queryParams);
+  // console.log("queryParams:", queryParams);
 
   const { data: postData, isLoading: postLoading } =
     useGetAllPostsQuery(queryParams);
 
-  console.log("post data:", postData);
+  // console.log("all post data:", postData);
 
   // clear all filter
   const handleFilterClear = () => {

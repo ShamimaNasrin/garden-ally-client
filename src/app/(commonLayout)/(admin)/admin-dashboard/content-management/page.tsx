@@ -17,7 +17,7 @@ const posts = [
     authorName: "John",
     title: "Post 1",
     description: "This is the first post.",
-    imageUrl: "https://i.ibb.co/YDnvjCd/garden2.jpg",
+    images: "https://i.ibb.co/YDnvjCd/garden2.jpg",
     isPremium: true,
     isUserVerified: false,
     category: "Flowers",
@@ -30,7 +30,7 @@ const posts = [
     authorName: "Alex",
     title: "Post 2",
     description: "This is the second post.",
-    imageUrl: "https://i.ibb.co/YDnvjCd/garden2.jpg",
+    images: "https://i.ibb.co/YDnvjCd/garden2.jpg",
     isPremium: false,
     isUserVerified: false,
     category: "Vegetables",
@@ -81,7 +81,7 @@ const ContentManagement: React.FC = () => {
                   >
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
                       <Image
-                        src={post.imageUrl}
+                        src={post.images}
                         alt={post.title}
                         width={50}
                         height={50}
