@@ -1,16 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "@/components/profile/PostCard";
-// import { useUser } from "@/context/user.provider";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
-// import { useUpdateUserProfile } from "@/hooks/user.hook";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { address } from "framer-motion/client";
+import { useGetMyPostsQuery } from "@/redux/features/post/postApi";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { TNewsPost } from "@/types";
+import NoDataFound from "@/components/UI/NoDataFound";
 
 type User = {
   id: string;
@@ -34,34 +37,34 @@ export interface TUserForm {
   isDeleted?: boolean;
 }
 
-const posts = [
-  {
-    id: "1",
-    authorId: "user1",
-    authorName: "John",
-    title: "Post 1",
-    description: "This is the first post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 10,
-    downVoteNumber: 20,
-  },
-  {
-    id: "2",
-    authorId: "user2",
-    authorName: "Alex",
-    title: "Post 2",
-    description: "This is the second post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 90,
-    downVoteNumber: 5,
-  },
-];
+// const posts = [
+//   {
+//     id: "1",
+//     authorId: "user1",
+//     authorName: "John",
+//     title: "Post 1",
+//     description: "This is the first post.",
+//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+//     isPremium: false,
+//     isUserVerified: false,
+//     category: "Vegetables",
+//     upVoteNumber: 10,
+//     downVoteNumber: 20,
+//   },
+//   {
+//     id: "2",
+//     authorId: "user2",
+//     authorName: "Alex",
+//     title: "Post 2",
+//     description: "This is the second post.",
+//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
+//     isPremium: false,
+//     isUserVerified: false,
+//     category: "Vegetables",
+//     upVoteNumber: 90,
+//     downVoteNumber: 5,
+//   },
+// ];
 
 export interface FollowSuggestion {
   _id: string;
@@ -157,35 +160,44 @@ const followersList = [
 ];
 
 const UserProfile = () => {
+  const currentUser = useAppSelector(useCurrentUser);
+  const { data: postData, isLoading: postLoading } = useGetMyPostsQuery(
+    currentUser?._id
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userLoading, setUserLoading] = useState(false);
 
-  // const { user: userInfo, isLoading: userLoading } = useUser();
-  // console.log("current user: ", userInfo);
+  // console.log("user post: ", postData);
 
-  const userInfo = {
-    name: "user1",
-    phone: "078262",
-    address: "bd",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isVerified: false,
-  };
+  useEffect(() => {
+    if (currentUser) {
+      setUserLoading(false);
+    }
+  }, [currentUser]);
+
+  // const currentUser = {
+  //   name: "user1",
+  //   phone: "078262",
+  //   address: "bd",
+  //   profilePhoto:
+  //     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+  //   isVerified: false,
+  // };
 
   const [formData, setFormData] = useState<TUserForm>({
-    name: userInfo?.name || "",
-    phone: userInfo?.phone || "",
-    address: userInfo?.address || "",
-    profilePhoto: userInfo?.profilePhoto || "",
+    name: currentUser?.name || "",
+    phone: currentUser?.phone || "",
+    address: currentUser?.address || "",
+    profilePhoto: currentUser?.profilePhoto || "",
   });
 
   // const {
   //   data: updatedUser,
   //   mutate: updateUserProfile,
   //   isSuccess: isUpdateProfileTrue,
-  // } = useUpdateUserProfile(userInfo?._id || "");
+  // } = useUpdateUserProfile(currentUser?._id || "");
 
   // console.log("updated user: ", updatedUser);
 
@@ -206,31 +218,31 @@ const UserProfile = () => {
     // console.log("userLoading:", userLoading);
 
     if (formData.name.length === 0) {
-      console.log("name:", userInfo.name);
+      console.log("name:", currentUser?.name);
       setFormData({
         ...formData,
-        name: userInfo?.name,
+        name: currentUser?.name || "",
       });
     }
     if (formData.phone.length === 0) {
-      console.log("phone:", userInfo.phone);
+      console.log("phone:", currentUser?.phone);
       setFormData({
         ...formData,
-        phone: userInfo?.phone,
+        phone: currentUser?.phone || "",
       });
     }
     if (formData.address.length === 0) {
-      console.log("address:", userInfo.address);
+      console.log("address:", currentUser?.address);
       setFormData({
         ...formData,
-        address: userInfo?.address,
+        address: currentUser?.address || "",
       });
     }
     if (formData.profilePhoto.length === 0) {
-      console.log("profilePhoto:", userInfo.profilePhoto);
+      console.log("profilePhoto:", currentUser?.profilePhoto);
       setFormData({
         ...formData,
-        profilePhoto: userInfo?.profilePhoto,
+        profilePhoto: currentUser?.profilePhoto || "",
       });
     }
 
@@ -277,24 +289,24 @@ const UserProfile = () => {
         <LoadingSpinner />
       ) : (
         <>
-          {userInfo && (
+          {currentUser && (
             <>
               {/* name and image */}
               <div className="flex flex-col items-center p-6">
                 <Image
-                  src={userInfo?.profilePhoto}
+                  src={currentUser?.profilePhoto}
                   alt="Profile Picture"
                   width={150}
                   height={150}
                   className="rounded-full mb-4 shadow-lg"
                 />
                 <h1 className="text-2xl font-semibold flex items-center">
-                  {userInfo?.name}
-                  {userInfo?.isVerified && (
+                  {currentUser?.name}
+                  {currentUser?.isVerified && (
                     <FaCheckCircle className="text-blue-500 ml-2" />
                   )}
                 </h1>
-                {!userInfo?.isVerified && (
+                {!currentUser?.isVerified && (
                   <button
                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     onClick={handleVerification}
@@ -355,7 +367,7 @@ const UserProfile = () => {
                           type="text"
                           name="name"
                           // value={formData.name}
-                          placeholder={userInfo.name}
+                          placeholder={currentUser.name}
                           onChange={handleChange}
                           className="border p-2 rounded"
                         />
@@ -364,8 +376,8 @@ const UserProfile = () => {
                         <label className="font-medium">Phone</label>
                         <input
                           type="number"
-                          // value={userInfo.phone}
-                          placeholder={userInfo.phone}
+                          // value={currentUser.phone}
+                          placeholder={currentUser.phone}
                           name="phone"
                           onChange={handleChange}
                           className="border p-2 rounded"
@@ -376,7 +388,7 @@ const UserProfile = () => {
                         <input
                           type="text"
                           // value={formData.address}
-                          placeholder={userInfo.address}
+                          placeholder={currentUser.address}
                           name="address"
                           onChange={handleChange}
                           className="border p-2 rounded"
@@ -387,7 +399,7 @@ const UserProfile = () => {
                         <input
                           type="text"
                           // value={formData.profilePhoto}
-                          placeholder={userInfo.profilePhoto}
+                          placeholder={currentUser.profilePhoto}
                           name="profilePhoto"
                           onChange={handleChange}
                           className="border p-2 rounded"
@@ -503,11 +515,17 @@ const UserProfile = () => {
 
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Posts</h2>
-                    {/* <div className="">
-                      {posts.map((post) => (
-                        <PostCard key={post.id} userId="user1" post={post} />
-                      ))}
-                    </div> */}
+                    <div className="">
+                      {postLoading ? (
+                        <LoadingSpinner />
+                      ) : postData?.data?.length ? (
+                        postData?.data?.map((post: TNewsPost) => (
+                          <PostCard key={post._id} post={post} />
+                        ))
+                      ) : (
+                        <NoDataFound />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

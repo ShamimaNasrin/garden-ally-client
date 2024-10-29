@@ -5,36 +5,12 @@ import PostCard from "@/components/profile/PostCard";
 // import { useUser } from "@/context/user.provider";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { motion } from "framer-motion";
-import { useState } from "react";
-
-const posts = [
-  {
-    id: "1",
-    authorId: "user1",
-    authorName: "John",
-    title: "Post 1",
-    description: "This is the first post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 10,
-    downVoteNumber: 20,
-  },
-  {
-    id: "2",
-    authorId: "user2",
-    authorName: "Alex",
-    title: "Post 2",
-    description: "This is the second post.",
-    images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 90,
-    downVoteNumber: 5,
-  },
-];
+import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { useGetMyPostsQuery } from "@/redux/features/post/postApi";
+import NoDataFound from "@/components/UI/NoDataFound";
+import { TNewsPost } from "@/types";
 
 const followingList = [
   {
@@ -71,39 +47,39 @@ const followersList = [
 ];
 
 const UserDashboard = () => {
-  const [userLoading, setUserLoading] = useState(false);
+  const currentUser = useAppSelector(useCurrentUser);
+  const { data: postData, isLoading: postLoading } = useGetMyPostsQuery(
+    currentUser?._id
+  );
+  const [userLoading, setUserLoading] = useState(true);
 
-  // const { user: userInfo, isLoading: userLoading } = useUser();
+  useEffect(() => {
+    if (currentUser) {
+      setUserLoading(false);
+    }
+  }, [currentUser]);
 
-  const userInfo = {
-    name: "user1",
-    phone: "078262",
-    address: "bd",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isVerified: false,
-  };
-  console.log("current user: ", userInfo);
+  console.log("current user: ", currentUser);
   return (
     <div className=" mx-auto">
       {userLoading ? (
         <LoadingSpinner />
       ) : (
         <>
-          {userInfo && (
+          {currentUser && (
             <>
               {/* name and image */}
               <div className="flex flex-col items-center p-6">
                 <Image
-                  src={userInfo?.profilePhoto}
+                  src={currentUser?.profilePhoto}
                   alt="Profile Picture"
                   width={150}
                   height={150}
                   className="rounded-full mb-4 shadow-lg"
                 />
                 <h1 className="text-2xl font-semibold flex items-center">
-                  {userInfo?.name}
-                  {userInfo?.isVerified && (
+                  {currentUser?.name}
+                  {currentUser?.isVerified && (
                     <FaCheckCircle className="text-blue-500 ml-2" />
                   )}
                 </h1>
@@ -122,7 +98,7 @@ const UserDashboard = () => {
                           initial={{ opacity: 0, y: 40 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 1 }}
-                          key={user.id}
+                          key={user?.id}
                           className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                         >
                           <Image
@@ -133,7 +109,7 @@ const UserDashboard = () => {
                             className="rounded-full"
                           />
                           <div>
-                            <p>{user.name}</p>
+                            <p>{user?.name}</p>
                           </div>
                         </motion.div>
                       ))}
@@ -148,7 +124,7 @@ const UserDashboard = () => {
                           initial={{ opacity: 0, y: 40 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 1 }}
-                          key={user.id}
+                          key={user?.id}
                           className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                         >
                           <Image
@@ -158,7 +134,7 @@ const UserDashboard = () => {
                             height={50}
                             className="rounded-full"
                           />
-                          <span>{user.name}</span>
+                          <span>{user?.name}</span>
                         </motion.div>
                       ))}
                     </div>
@@ -166,11 +142,17 @@ const UserDashboard = () => {
 
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Posts</h2>
-                    {/* <div className="">
-                      {posts.map((post) => (
-                        <PostCard key={post.id} userId="user1" post={post} />
-                      ))}
-                    </div> */}
+                    <div className="">
+                      {postLoading ? (
+                        <LoadingSpinner />
+                      ) : postData?.data?.length ? (
+                        postData?.data?.map((post: TNewsPost) => (
+                          <PostCard key={post._id} post={post} />
+                        ))
+                      ) : (
+                        <NoDataFound />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
