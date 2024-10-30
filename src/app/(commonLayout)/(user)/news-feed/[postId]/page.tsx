@@ -8,13 +8,17 @@ import { FiTrash2 } from "react-icons/fi";
 import EditPostModal from "@/components/profile/EditPostModal";
 import { FaFileArrowDown } from "react-icons/fa6";
 import { usePDF } from "react-to-pdf";
-import { useGetSinglePostQuery } from "@/redux/features/post/postApi";
+import {
+  useDeletePostMutation,
+  useGetSinglePostQuery,
+} from "@/redux/features/post/postApi";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import NoDataFound from "@/components/UI/NoDataFound";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { IoEllipsisVertical } from "react-icons/io5";
 import ConfirmationModal from "@/components/UI/ConfirmationModal";
+import { useRouter } from "next/navigation";
 
 type TPostDetailsProps = {
   params: {
@@ -55,6 +59,8 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const { data: post, isLoading: postLoading } = useGetSinglePostQuery(postId);
   const currentUser = useAppSelector(useCurrentUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [deletePost] = useDeletePostMutation();
+  const router = useRouter();
 
   // console.log("postId:", postId);
   // console.log("single post:", post);
@@ -62,7 +68,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
   const [selectedComment, setSelectedComment] = useState<TComment | null>(null);
-  const [isDelete, setIsDelete] = useState(false);
+  const [isCommentDelete, setIsCommentDelete] = useState(false);
   const [isEditComment, setIsEditComment] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -77,17 +83,19 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
 
   // delete post
   const handleDeletePost = async (postId: string) => {
-    console.log("post deleted:", postId);
-    // try {
-    //   const res = await removeBooking(bookingId).unwrap();
-    //   if (res?.success) {
-    //     console.log("delete res:", res?.message);
-    //     toast.success("booking deleted successfully!");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   toast.error("Failed to Delete booking");
-    // }
+    // console.log("post deleted:", postId);
+
+    try {
+      const res = await deletePost(postId).unwrap();
+      if (res?.success) {
+        console.log("delete res:", res?.message);
+        toast.success("Post deleted successfully!");
+        router.push("/");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to Delete a post");
+    }
     setShowDeleteModal(false);
   };
 
@@ -227,7 +235,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                       <button
                         onClick={() => {
                           setSelectedComment(com);
-                          setIsDelete(true);
+                          setIsCommentDelete(true);
                         }}
                         className="text-lg text-red-600"
                       >
