@@ -13,6 +13,8 @@ import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import NoDataFound from "@/components/UI/NoDataFound";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { IoEllipsisVertical } from "react-icons/io5";
+import ConfirmationModal from "@/components/UI/ConfirmationModal";
 
 type TPostDetailsProps = {
   params: {
@@ -52,9 +54,10 @@ const comments: TComment[] = [
 const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const { data: post, isLoading: postLoading } = useGetSinglePostQuery(postId);
   const currentUser = useAppSelector(useCurrentUser);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  console.log("postId:", postId);
-  console.log("single post:", post);
+  // console.log("postId:", postId);
+  // console.log("single post:", post);
 
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
@@ -69,6 +72,8 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const openEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
   };
+
+  // console.log("dropdownOpen:", dropdownOpen);
 
   // delete post
   const handleDeletePost = async (postId: string) => {
@@ -127,18 +132,49 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
               ></p>
             </div>
 
-            <div className="flex w-[10%] justify-end items-center text-end ">
+            <div className="relative flex w-[10%] justify-end items-center text-end ">
               <button onClick={() => toPDF()}>
-                <FaFileArrowDown className="inline-block mr-1" />
+                <FaFileArrowDown className="inline-block mr-1 " />
               </button>
               <button
-                className={` ${
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className={`flex items-center justify-center text-gray-600 ${
                   currentUser?._id !== post?.data?.authorId?._id && "hidden"
                 }`}
-                onClick={openEditModal}
               >
-                <AiFillEdit />
+                <IoEllipsisVertical className="text-lg" />
               </button>
+              {dropdownOpen && (
+                <ul
+                  // className="absolute right-0 md:left-auto left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2"
+                  className="absolute right-0 top-5 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-10"
+                  style={{ transform: "translateY(8px)" }}
+                >
+                  <li className="px-4 py-2 hover:bg-gray-100">
+                    <button
+                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                      onClick={() => {
+                        openEditModal();
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <AiFillEdit /> <span>Edit post</span>
+                    </button>
+                  </li>
+
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <button
+                      className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <FiTrash2 /> Delete post
+                    </button>
+                  </li>
+                </ul>
+              )}
             </div>
           </div>
 
@@ -247,6 +283,12 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
       {isEditModalOpen && (
         <EditPostModal post={post} closeModal={setIsEditModalOpen} />
       )}
+      {/* Delete Post Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeletePost(postId)}
+      />
     </div>
   );
 };
