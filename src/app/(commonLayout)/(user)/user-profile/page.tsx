@@ -12,8 +12,14 @@ import { address } from "framer-motion/client";
 import { useGetMyPostsQuery } from "@/redux/features/post/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
-import { TNewsPost } from "@/types";
+import { IUser, TNewsPost, TUpdatedUser } from "@/types";
 import NoDataFound from "@/components/UI/NoDataFound";
+import {
+  useAddFollowMutation,
+  useFetchUserByIdQuery,
+  useGetFollowSuggestionQuery,
+  useUnFollowMutation,
+} from "@/redux/features/user/userApi";
 
 type User = {
   id: string;
@@ -164,27 +170,26 @@ const UserProfile = () => {
   const { data: postData, isLoading: postLoading } = useGetMyPostsQuery(
     currentUser?._id
   );
+  const { data: followSuggestions, isLoading: followSuggestionLoading } =
+    useGetFollowSuggestionQuery(currentUser?._id);
+  const { data: updatedCurrentUser, isLoading: updatedCurrentUserLoading } =
+    useFetchUserByIdQuery(currentUser?._id);
+  const [addFollow, { isLoading: isFollowLoading }] = useAddFollowMutation();
+  const [unFollow, { isLoading: isUnFollowLoading }] = useUnFollowMutation();
+
   const [errorMessage, setErrorMessage] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userLoading, setUserLoading] = useState(false);
 
   // console.log("user post: ", postData);
+  console.log("updatedCurrentUser: ", updatedCurrentUser);
 
   useEffect(() => {
     if (currentUser) {
       setUserLoading(false);
     }
   }, [currentUser]);
-
-  // const currentUser = {
-  //   name: "user1",
-  //   phone: "078262",
-  //   address: "bd",
-  //   profilePhoto:
-  //     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-  //   isVerified: false,
-  // };
 
   const [formData, setFormData] = useState<TUserForm>({
     name: currentUser?.name || "",
@@ -264,11 +269,37 @@ const UserProfile = () => {
     setErrorMessage("");
   };
 
-  const handleFollowUser = (id: string) => {
-    console.log("followUser:", id);
+  // Handle follow user
+  const handleFollowUser = async (followId: string) => {
+    console.log("followUser:", followId);
+    if (currentUser) {
+      try {
+        await addFollow({
+          userId: currentUser._id,
+          followId,
+        }).unwrap();
+        toast.success(`Successfully follow user`);
+      } catch (error) {
+        console.error("Failed to follow user:", error);
+        toast.error(`Failed to Follow`);
+      }
+    }
   };
-  const handleUnFollowToggle = (id: string) => {
-    console.log("UnFollowUser:", id);
+
+  // Handle unfollow user
+  const handleUnFollowToggle = async (followingId: string) => {
+    if (currentUser) {
+      try {
+        await unFollow({
+          userId: currentUser._id,
+          followingId,
+        }).unwrap();
+        toast.success(`Successfully unfollow user`);
+      } catch (error) {
+        console.error("Failed to unfollow user:", error);
+        toast.error(`Failed to unFollow`);
+      }
+    }
   };
 
   const handleVerification = () => {
@@ -285,7 +316,7 @@ const UserProfile = () => {
 
   return (
     <div className=" mx-auto">
-      {userLoading ? (
+      {userLoading || updatedCurrentUserLoading ? (
         <LoadingSpinner />
       ) : (
         <>
@@ -327,29 +358,36 @@ const UserProfile = () => {
                   Follow Other user
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {followSuggestions?.map((suggestion) => (
-                    <div
-                      key={suggestion?._id}
-                      className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg"
-                    >
-                      <Image
-                        src={suggestion.profilePhoto}
-                        alt="Profile Picture"
-                        width={80}
-                        height={80}
-                        className="rounded-full mb-4 shadow-lg"
-                      />
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {suggestion.name}
-                      </h3>
-                      <button
-                        onClick={() => handleFollowUser(suggestion?._id)}
-                        className="px-4 py-1 mt-1 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                  {followSuggestionLoading ? (
+                    <LoadingSpinner />
+                  ) : followSuggestions?.data?.length ? (
+                    followSuggestions?.data?.map((suggestion: IUser) => (
+                      <div
+                        key={suggestion?._id}
+                        className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg"
                       >
-                        Follow
-                      </button>
-                    </div>
-                  ))}
+                        <Image
+                          src={suggestion?.profilePhoto}
+                          alt="Profile Picture"
+                          width={80}
+                          height={80}
+                          className="rounded-full mb-4 shadow-lg"
+                        />
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {suggestion?.name}
+                        </h3>
+                        <button
+                          onClick={() => handleFollowUser(suggestion?._id)}
+                          className="px-4 py-1 mt-1 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                          disabled={isFollowLoading}
+                        >
+                          Follow
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <NoDataFound />
+                  )}
                 </div>
               </motion.div>
 
@@ -455,6 +493,7 @@ const UserProfile = () => {
 
                 {/* followings and post */}
                 <div className="xl:w-[60%] lg:w-[60%] md:w-[70%] w-full">
+                  {/* followings list */}
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Following</h2>
                     <motion.div
@@ -463,56 +502,73 @@ const UserProfile = () => {
                       transition={{ duration: 1 }}
                       className="flex flex-wrap gap-4"
                     >
-                      {followingList.map((user) => (
-                        <div
-                          key={user.id}
-                          className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
-                        >
-                          <Image
-                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                            alt="profile picture"
-                            width={50}
-                            height={50}
-                            className="rounded-full"
-                          />
-                          <div>
-                            <p>{user.name}</p>
-                            <button
-                              onClick={() => handleUnFollowToggle(user.id)}
-                              className="text-blue-500 text-sm hover:underline hover:text-blue-700"
+                      {updatedCurrentUser?.data?.followings?.length ? (
+                        updatedCurrentUser?.data?.followings?.map(
+                          (user: TUpdatedUser) => (
+                            <div
+                              key={user._id}
+                              className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
                             >
-                              Unfollow
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                              <Image
+                                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                                alt="profile picture"
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                              />
+                              <div>
+                                <p>{user?.name}</p>
+                                <button
+                                  onClick={() =>
+                                    handleUnFollowToggle(user?._id)
+                                  }
+                                  className="text-blue-500 cursor-pointer text-xs hover:underline hover:text-blue-700"
+                                  disabled={isUnFollowLoading}
+                                >
+                                  Unfollow
+                                </button>
+                              </div>
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <NoDataFound />
+                      )}
                     </motion.div>
                   </div>
 
+                  {/* followings list */}
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Followers</h2>
                     <div className="flex flex-wrap gap-4">
-                      {followersList?.map((user) => (
-                        <motion.div
-                          initial={{ opacity: 0, y: 40 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 1 }}
-                          key={user.id}
-                          className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
-                        >
-                          <Image
-                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                            alt="profile picture"
-                            width={50}
-                            height={50}
-                            className="rounded-full"
-                          />
-                          <span>{user.name}</span>
-                        </motion.div>
-                      ))}
+                      {updatedCurrentUser?.data?.followers?.length ? (
+                        updatedCurrentUser?.data?.followers?.map(
+                          (user: TUpdatedUser) => (
+                            <motion.div
+                              initial={{ opacity: 0, y: 40 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 1 }}
+                              key={user._id}
+                              className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
+                            >
+                              <Image
+                                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                                alt="profile picture"
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                              />
+                              <span>{user?.name}</span>
+                            </motion.div>
+                          )
+                        )
+                      ) : (
+                        <NoDataFound />
+                      )}
                     </div>
                   </div>
 
+                  {/* my post */}
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Posts</h2>
                     <div className="">

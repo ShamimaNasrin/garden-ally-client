@@ -24,6 +24,7 @@ export interface IUser {
   name: string;
   role: string;
   email: string;
+  password?: string;
   phone: string;
   address: string;
   profilePhoto: string;
@@ -32,6 +33,25 @@ export interface IUser {
   isVerified?: boolean;
   followers?: string[];
   followings?: string[];
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface TUpdatedUser {
+  _id: string;
+  name: string;
+  role: string;
+  email: string;
+  password?: string;
+  phone: string;
+  address: string;
+  profilePhoto: string;
+  favouritePosts?: Array<any>;
+  isVerified?: boolean;
+  followers?: Array<any>;
+  followings?: Array<any>;
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;

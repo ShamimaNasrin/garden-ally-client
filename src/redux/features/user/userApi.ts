@@ -13,7 +13,7 @@ const userApi = baseApi.injectEndpoints({
 
     // Query to fetch A user by ID
     fetchUserById: builder.query({
-      query: ({ userId }) => ({
+      query: (userId) => ({
         url: `/users/${userId}`,
         method: "GET",
       }),
@@ -63,7 +63,7 @@ const userApi = baseApi.injectEndpoints({
       query: ({ userId, followId }) => ({
         url: `/users/add-follow/${userId}`,
         method: "POST",
-        body: followId,
+        body: { followId },
       }),
       invalidatesTags: ["user"],
     }),
@@ -73,7 +73,7 @@ const userApi = baseApi.injectEndpoints({
       query: ({ userId, followingId }) => ({
         url: `/users/unfollow/${userId}`,
         method: "DELETE",
-        body: followingId,
+        body: { followingId },
       }),
       invalidatesTags: ["user"],
     }),
