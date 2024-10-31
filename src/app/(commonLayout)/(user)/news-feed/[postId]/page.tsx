@@ -10,8 +10,10 @@ import { FaFileArrowDown } from "react-icons/fa6";
 import { usePDF } from "react-to-pdf";
 import {
   useAddCommentMutation,
+  useDeleteCommentMutation,
   useDeletePostMutation,
   useGetSinglePostQuery,
+  useUpdateCommentMutation,
 } from "@/redux/features/post/postApi";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import NoDataFound from "@/components/UI/NoDataFound";
@@ -68,16 +70,18 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deletePost] = useDeletePostMutation();
   const [addComment] = useAddCommentMutation();
+  const [updateComment, { isLoading: isUpdating }] = useUpdateCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
   const router = useRouter();
 
   // console.log("postId:", postId);
-  console.log("single post:", post);
+  // console.log("single post:", post);
 
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
   const [selectedComment, setSelectedComment] = useState<TComment | null>(null);
-  const [isCommentDelete, setIsCommentDelete] = useState(false);
-  const [isEditComment, setIsEditComment] = useState(false);
+  // const [isCommentDelete, setIsCommentDelete] = useState(false);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -126,13 +130,43 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
     }
   };
 
-  const handleEditComment = (commentId: string) => {
-    console.log("comment id:", commentId);
-    if (!existCommentEdit.trim())
+  const handleEditComment = async (commentId: string) => {
+    // console.log("comment id:", commentId);
+    if (!existCommentEdit.trim()) {
       return toast.error("Comment cannot be empty!");
-    toast.success("Comment updated!");
-    setExistCommentEdit("");
-    setIsEditComment(false);
+    }
+
+    const updateCommentObj = {
+      postId,
+      commentId,
+      updatedComment: { comment: existCommentEdit },
+    };
+
+    // console.log("updateCommentObj:", updateCommentObj);
+
+    try {
+      await updateComment(updateCommentObj).unwrap();
+
+      toast.success("Comment updated successfully!");
+
+      // Clear the input and reset editing state
+      setExistCommentEdit("");
+      setSelectedComment(null);
+    } catch (error) {
+      console.error("Failed to update comment:", error);
+      toast.error("Failed to update comment. Please try again.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    console.log("comment id:", commentId);
+    try {
+      await deleteComment({ postId, commentId }).unwrap();
+      toast.success("Comment deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+      toast.error("Failed to delete comment. Please try again.");
+    }
   };
 
   return (
@@ -247,7 +281,8 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                       <button
                         onClick={() => {
                           setSelectedComment(com);
-                          setIsEditComment(!isEditComment);
+                          // setIsEditComment(!isEditComment);
+                          setExistCommentEdit(com.comment);
                         }}
                         className="mr-2 text-lg"
                       >
@@ -255,8 +290,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                       </button>
                       <button
                         onClick={() => {
-                          setSelectedComment(com);
-                          setIsCommentDelete(true);
+                          handleDeleteComment(com?._id);
                         }}
                         className="text-lg text-red-600"
                       >
@@ -266,19 +300,21 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                   </div>
 
                   {currentUser?._id === com?.commentatorId?._id &&
-                    isEditComment && (
+                    selectedComment?._id === com._id && (
                       <div className="flex items-center gap-3 mt-3">
                         <input
                           className="ml-1 w-full max-w-[600px] text-wrap bg-white border p-2 rounded"
-                          placeholder="Add a comment"
+                          placeholder="Edit your comment"
+                          value={existCommentEdit}
                           onChange={(e) => setExistCommentEdit(e.target.value)}
                         />
 
                         <button
                           onClick={() => handleEditComment(com._id)}
                           className="bg-emerald-500 text-white px-2 py-1 rounded"
+                          disabled={isUpdating}
                         >
-                          save
+                          {isUpdating ? "Saving..." : "Save"}
                         </button>
                       </div>
                     )}
