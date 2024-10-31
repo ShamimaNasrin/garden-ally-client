@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { TNewsPost } from "@/types";
+import { useVotePostMutation } from "@/redux/features/post/postApi";
 
 type TPostProps = {
   post: TNewsPost;
@@ -22,9 +23,36 @@ type TPostProps = {
 
 const PostCard = ({ post }: TPostProps) => {
   const currentUser = useAppSelector(useCurrentUser);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isUnLiked, setIsUnLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const [votePost] = useVotePostMutation();
+
+  // Handle vote change
+  const handleVote = async (voteType: "upvote" | "downvote") => {
+    // console.log("voteType:", voteType);
+
+    if (!currentUser?._id) {
+      toast.error("Please log in to vote.");
+      return;
+    }
+
+    const voteObj = {
+      postId: post._id,
+      userId: currentUser._id,
+      voteType: voteType,
+    };
+
+    // console.log("voteObj:", voteObj);
+
+    // Send vote request to server
+    try {
+      await votePost(voteObj).unwrap();
+      toast.success("Vote updated successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update vote. Please try again.");
+    }
+  };
 
   // share copy to clipboard feature
   const handleShare = async () => {
@@ -105,25 +133,27 @@ const PostCard = ({ post }: TPostProps) => {
             <div className="flex items-center justify-between mt-2">
               <button
                 className="flex items-center gap-1 text-gray-500"
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={() => handleVote("upvote")}
               >
-                {isLiked ? (
+                {currentUser?._id &&
+                post?.upVoterList.includes(currentUser?._id) ? (
                   <AiTwotoneLike className="text-blue-500" />
                 ) : (
                   <AiOutlineLike />
-                )}{" "}
+                )}
                 <span className="text-sm">{post?.upVoteNumber} UpVote</span>
               </button>
 
               <button
                 className="flex items-center gap-1 text-gray-500"
-                onClick={() => setIsUnLiked(!isUnLiked)}
+                onClick={() => handleVote("downvote")}
               >
-                {isUnLiked ? (
+                {currentUser?._id &&
+                post?.downVoterList.includes(currentUser?._id) ? (
                   <AiTwotoneDislike className="text-blue-500" />
                 ) : (
                   <AiOutlineDislike />
-                )}{" "}
+                )}
                 <span className="text-sm">{post?.downVoteNumber} DownVote</span>
               </button>
 
