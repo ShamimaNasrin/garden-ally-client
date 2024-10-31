@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaHeart, FaRegHeart, FaComment } from "react-icons/fa";
 import { IoShareSocialSharp } from "react-icons/io5";
@@ -16,6 +16,10 @@ import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { TNewsPost } from "@/types";
 import { useVotePostMutation } from "@/redux/features/post/postApi";
+import {
+  useAddFavoritePostMutation,
+  useRemoveFavoritePostMutation,
+} from "@/redux/features/user/userApi";
 
 type TPostProps = {
   post: TNewsPost;
@@ -26,6 +30,41 @@ const PostCard = ({ post }: TPostProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   const [votePost] = useVotePostMutation();
+  const [addFavoritePost] = useAddFavoritePostMutation();
+  const [removeFavoritePost] = useRemoveFavoritePostMutation();
+
+  // console.log("currentUser:", currentUser);
+
+  useEffect(() => {
+    if (currentUser && currentUser?.favouritePosts?.includes(post._id)) {
+      setIsFavorited(true);
+    }
+  }, [currentUser, post._id]);
+
+  const handleFavoriteClick = async () => {
+    try {
+      if (currentUser) {
+        const paramObj = {
+          userId: currentUser._id,
+          postId: post._id,
+        };
+
+        // console.log("paramObj:", paramObj);
+        if (isFavorited) {
+          await removeFavoritePost(paramObj);
+          setIsFavorited(false);
+          toast.success("Post removed from favorites.");
+        } else {
+          await addFavoritePost(paramObj);
+          setIsFavorited(true);
+          toast.success("Post added to favorites.");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to update favorites:", error);
+      toast.error("Failed to update favorites. Please try again.");
+    }
+  };
 
   // Handle vote change
   const handleVote = async (voteType: "upvote" | "downvote") => {
@@ -86,7 +125,7 @@ const PostCard = ({ post }: TPostProps) => {
               className={`flex items-center gap-1 ${
                 isFavorited ? "text-red-500" : "text-gray-500"
               }`}
-              onClick={() => setIsFavorited(!isFavorited)}
+              onClick={handleFavoriteClick}
               disabled={
                 post?.isPremium &&
                 !currentUser?.isVerified &&

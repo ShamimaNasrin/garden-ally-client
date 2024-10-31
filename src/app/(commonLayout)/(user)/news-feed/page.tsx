@@ -79,7 +79,7 @@ const NewsFeedPage = () => {
               <option value="Vegetables">Vegetables</option>
               <option value="Flowers">Flowers</option>
               <option value="Landscaping">Landscaping</option>
-              <option value="ndoor Plants">Indoor Plants</option>
+              <option value="Indoor Plants">Indoor Plants</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <svg

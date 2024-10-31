@@ -83,7 +83,7 @@ const userApi = baseApi.injectEndpoints({
       query: ({ userId, postId }) => ({
         url: `/users/add-favorite/${userId}`,
         method: "POST",
-        body: postId,
+        body: { postId },
       }),
       invalidatesTags: ["user"],
     }),
@@ -93,7 +93,7 @@ const userApi = baseApi.injectEndpoints({
       query: ({ userId, postId }) => ({
         url: `/users/remove-favorite/${userId}`,
         method: "DELETE",
-        body: postId,
+        body: { postId },
       }),
       invalidatesTags: ["user"],
     }),

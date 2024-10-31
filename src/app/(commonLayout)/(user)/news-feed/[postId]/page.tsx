@@ -42,28 +42,6 @@ export type TComment = {
   _id: string;
 };
 
-// const comments: TComment[] = [
-//   {
-//     _id: "comment1",
-//     comment: "This is an insightful post, thanks for sharing! ",
-//     commentatorId: "user2",
-//     isDeleted: false,
-//   },
-//   {
-//     _id: "comment2",
-//     comment:
-//       "I totally agree with your points.This is an insightful post, thanks for sharing!This is an insightful post, thanks for sharing!",
-//     commentatorId: "user1",
-//     isDeleted: false,
-//   },
-//   {
-//     _id: "comment3",
-//     comment: "Can you elaborate more on this topic?",
-//     commentatorId: "user3",
-//     isDeleted: false,
-//   },
-// ];
-
 const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const { data: post, isLoading: postLoading } = useGetSinglePostQuery(postId);
   const currentUser = useAppSelector(useCurrentUser);
@@ -281,7 +259,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                       <button
                         onClick={() => {
                           setSelectedComment(com);
-                          // setIsEditComment(!isEditComment);
+
                           setExistCommentEdit(com.comment);
                         }}
                         className="mr-2 text-lg"
