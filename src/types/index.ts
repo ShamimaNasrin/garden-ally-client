@@ -55,6 +55,19 @@ type TAuthor = {
   profilePhoto: string;
 };
 
+type TCommentator = {
+  _id: string;
+  name: string;
+  profilePhoto: string;
+};
+
+type TComment = {
+  comment: string;
+  commentatorId: TCommentator;
+  isDeleted: boolean;
+  _id: string;
+};
+
 export type TNewsPost = {
   _id: string;
   authorId: TAuthor;
@@ -68,7 +81,7 @@ export type TNewsPost = {
   downVoterList: string[];
   isPremium: boolean;
   isDeleted?: boolean;
-  comments: string[];
+  comments: TComment[];
   createdAt: string;
   updatedAt: string;
 };

@@ -159,7 +159,12 @@ const PostCard = ({ post }: TPostProps) => {
 
               <div className="flex items-center gap-1 text-gray-500">
                 <FaComment />{" "}
-                <span className="text-sm cursor-pointer">Comments</span>
+                <Link href={`/news-feed/${post._id}`}>
+                  <span className="text-sm cursor-pointer">
+                    {" "}
+                    {post?.comments?.length} Comments
+                  </span>
+                </Link>
               </div>
 
               <div

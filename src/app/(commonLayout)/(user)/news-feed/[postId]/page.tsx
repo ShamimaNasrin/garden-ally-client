@@ -9,6 +9,7 @@ import EditPostModal from "@/components/profile/EditPostModal";
 import { FaFileArrowDown } from "react-icons/fa6";
 import { usePDF } from "react-to-pdf";
 import {
+  useAddCommentMutation,
   useDeletePostMutation,
   useGetSinglePostQuery,
 } from "@/redux/features/post/postApi";
@@ -26,44 +27,51 @@ type TPostDetailsProps = {
   };
 };
 
-export type TComment = {
+type TCommentator = {
   _id: string;
-  comment: string;
-  commentatorId: string;
-  isDeleted: boolean;
+  name: string;
+  profilePhoto: string;
 };
 
-const comments: TComment[] = [
-  {
-    _id: "comment1",
-    comment: "This is an insightful post, thanks for sharing! ",
-    commentatorId: "user2",
-    isDeleted: false,
-  },
-  {
-    _id: "comment2",
-    comment:
-      "I totally agree with your points.This is an insightful post, thanks for sharing!This is an insightful post, thanks for sharing!",
-    commentatorId: "user1",
-    isDeleted: false,
-  },
-  {
-    _id: "comment3",
-    comment: "Can you elaborate more on this topic?",
-    commentatorId: "user3",
-    isDeleted: false,
-  },
-];
+export type TComment = {
+  comment: string;
+  commentatorId: TCommentator;
+  isDeleted: boolean;
+  _id: string;
+};
+
+// const comments: TComment[] = [
+//   {
+//     _id: "comment1",
+//     comment: "This is an insightful post, thanks for sharing! ",
+//     commentatorId: "user2",
+//     isDeleted: false,
+//   },
+//   {
+//     _id: "comment2",
+//     comment:
+//       "I totally agree with your points.This is an insightful post, thanks for sharing!This is an insightful post, thanks for sharing!",
+//     commentatorId: "user1",
+//     isDeleted: false,
+//   },
+//   {
+//     _id: "comment3",
+//     comment: "Can you elaborate more on this topic?",
+//     commentatorId: "user3",
+//     isDeleted: false,
+//   },
+// ];
 
 const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const { data: post, isLoading: postLoading } = useGetSinglePostQuery(postId);
   const currentUser = useAppSelector(useCurrentUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deletePost] = useDeletePostMutation();
+  const [addComment] = useAddCommentMutation();
   const router = useRouter();
 
   // console.log("postId:", postId);
-  // console.log("single post:", post);
+  console.log("single post:", post);
 
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
@@ -99,10 +107,23 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
     setShowDeleteModal(false);
   };
 
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (!newComment.trim()) return toast.error("Comment cannot be empty!");
-    toast.success("Comment added!");
-    setNewComment("");
+    try {
+      await addComment({
+        postId,
+        commentData: {
+          comment: newComment,
+          commentatorId: currentUser?._id && currentUser?._id,
+        },
+      }).unwrap();
+
+      toast.success("Comment added!");
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+      toast.error("Failed to add comment. Please try again.");
+    }
   };
 
   const handleEditComment = (commentId: string) => {
@@ -196,10 +217,10 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
 
           <div className="my-10">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-              {comments?.length} Comments
+              {post?.data?.comments?.length} Comments
             </h2>
             <div className="space-y-6">
-              {comments?.map((com) => (
+              {post?.data?.comments?.map((com: TComment) => (
                 <div
                   key={com._id}
                   className=" bg-gray-50 p-4 rounded-lg shadow-sm "
@@ -220,7 +241,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                     </div>
                     <div
                       className={`w-[20%]  justify-self-end text-end self-center ${
-                        currentUser?._id !== com?.commentatorId && "hidden"
+                        currentUser?._id !== com?.commentatorId?._id && "hidden"
                       }`}
                     >
                       <button
@@ -244,22 +265,23 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
                     </div>
                   </div>
 
-                  {currentUser?._id === com?.commentatorId && isEditComment && (
-                    <div className="flex items-center gap-3 mt-3">
-                      <input
-                        className="ml-1 w-full max-w-[600px] text-wrap bg-white border p-2 rounded"
-                        placeholder="Add a comment"
-                        onChange={(e) => setExistCommentEdit(e.target.value)}
-                      />
+                  {currentUser?._id === com?.commentatorId?._id &&
+                    isEditComment && (
+                      <div className="flex items-center gap-3 mt-3">
+                        <input
+                          className="ml-1 w-full max-w-[600px] text-wrap bg-white border p-2 rounded"
+                          placeholder="Add a comment"
+                          onChange={(e) => setExistCommentEdit(e.target.value)}
+                        />
 
-                      <button
-                        onClick={() => handleEditComment(com._id)}
-                        className="bg-emerald-500 text-white px-2 py-1 rounded"
-                      >
-                        save
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          onClick={() => handleEditComment(com._id)}
+                          className="bg-emerald-500 text-white px-2 py-1 rounded"
+                        >
+                          save
+                        </button>
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
