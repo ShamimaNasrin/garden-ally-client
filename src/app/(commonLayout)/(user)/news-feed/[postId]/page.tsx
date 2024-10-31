@@ -289,7 +289,7 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
 
       {/* Edit Post Modal */}
       {isEditModalOpen && (
-        <EditPostModal post={post} closeModal={setIsEditModalOpen} />
+        <EditPostModal post={post?.data} closeModal={setIsEditModalOpen} />
       )}
       {/* Delete Post Modal */}
       <ConfirmationModal

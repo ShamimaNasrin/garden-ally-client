@@ -2,16 +2,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TPostCard } from "./PostCard";
 import { toast } from "react-hot-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import UploadImgToImgBB from "./UploadImgToImgBB";
 import { categoryList } from "./AddPostModal";
+import { TNewsPost } from "@/types";
+import { useUpdateAPostMutation } from "@/redux/features/post/postApi";
 
 type EditPostModalProps = {
-  post: TPostCard;
+  post: TNewsPost;
   closeModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -40,6 +41,8 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
     },
   });
 
+  const [updateAPost] = useUpdateAPostMutation();
+
   useEffect(() => {
     setValue("title", post.title);
     setValue("category", post.category);
@@ -47,7 +50,13 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
   }, [post, setValue]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
+    // console.log("formdata:", data);
+    // console.log("description:", editorHtml);
+
+    if (!editorHtml.trim() || editorHtml === "<p><br></p>") {
+      toast.error("Description is required", { duration: 1000 });
+      return;
+    }
 
     if (data.images && data.images.length) {
       console.log("default img:", data.images);
@@ -69,12 +78,24 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
       images: data.images || post.images,
       category: data.category || post.category,
       isPremium: data.isPremium || post.isPremium,
-      authorId: "authorId",
     };
 
-    console.log("postdata:", postData);
+    // console.log("postdata:", postData);
 
-    toast.success("Post updated successfully!");
+    try {
+      const res = await updateAPost({
+        postId: post?._id,
+        updatedInfo: postData,
+      }).unwrap();
+      if (res?.success) {
+        console.log("update res:", res?.message);
+        toast.success("Post updated successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update Post");
+    }
+
     closeModal(false);
   };
 
@@ -89,7 +110,7 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
           <input
             className="w-full p-2 mb-4 border rounded"
             placeholder="Title"
-            {...register("title")}
+            {...register("title", { required: "Title is required" })}
           />
           {errors.title && (
             <p className="text-red-500 text-sm">{errors.title.message}</p>

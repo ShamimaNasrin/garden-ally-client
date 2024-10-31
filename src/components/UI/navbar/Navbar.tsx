@@ -50,7 +50,7 @@ const Navbar = () => {
     }
   }, [currentToken]);
 
-  console.log("saved user details:", userDetails);
+  // console.log("saved user details:", userDetails);
 
   const handleLogout = () => {
     dispatch(logOut());
