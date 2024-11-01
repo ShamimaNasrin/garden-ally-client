@@ -8,11 +8,10 @@ import PostCard from "@/components/profile/PostCard";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { address } from "framer-motion/client";
 import { useGetMyPostsQuery } from "@/redux/features/post/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
-import { IUser, TNewsPost, TUpdatedUser } from "@/types";
+import { IUser, TFollowUser, TNewsPost } from "@/types";
 import NoDataFound from "@/components/UI/NoDataFound";
 import {
   useAddFollowMutation,
@@ -20,13 +19,6 @@ import {
   useGetFollowSuggestionQuery,
   useUnFollowMutation,
 } from "@/redux/features/user/userApi";
-
-type User = {
-  id: string;
-  name: string;
-  profilePhoto: string;
-  isFollowing: boolean;
-};
 
 export interface TUserForm {
   _id?: string;
@@ -80,91 +72,6 @@ export interface FollowSuggestion {
   followings: string[];
 }
 
-const followSuggestions = [
-  {
-    _id: "follow1",
-    name: "Devid Paul",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-  {
-    _id: "follow2",
-    name: "John Snow",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-  {
-    _id: "follow7",
-    name: "Brad Stark",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-  {
-    _id: "follow5",
-    name: "Sansa Stark",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-  {
-    _id: "follow3",
-    name: "Ariya Stark",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-  {
-    _id: "follow4",
-    name: "Alex",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    followers: ["user1"],
-    followings: ["user2"],
-  },
-];
-
-const followingList = [
-  {
-    id: "1",
-    name: "User One",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isFollowing: true,
-  },
-  {
-    id: "2",
-    name: "User Two",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isFollowing: false,
-  },
-];
-
-const followersList = [
-  {
-    id: "3",
-    name: "User Three",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isFollowing: true,
-  },
-  {
-    id: "4",
-    name: "User Four",
-    profilePhoto:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    isFollowing: false,
-  },
-];
-
 const UserProfile = () => {
   const currentUser = useAppSelector(useCurrentUser);
   const { data: postData, isLoading: postLoading } = useGetMyPostsQuery(
@@ -183,7 +90,7 @@ const UserProfile = () => {
   const [userLoading, setUserLoading] = useState(false);
 
   // console.log("user post: ", postData);
-  console.log("updatedCurrentUser: ", updatedCurrentUser);
+  // console.log("updatedCurrentUser: ", updatedCurrentUser);
 
   useEffect(() => {
     if (currentUser) {
@@ -271,7 +178,7 @@ const UserProfile = () => {
 
   // Handle follow user
   const handleFollowUser = async (followId: string) => {
-    console.log("followUser:", followId);
+    // console.log("followUser:", followId);
     if (currentUser) {
       try {
         await addFollow({
@@ -288,6 +195,7 @@ const UserProfile = () => {
 
   // Handle unfollow user
   const handleUnFollowToggle = async (followingId: string) => {
+    // console.log("unfollowUser:", followingId);
     if (currentUser) {
       try {
         await unFollow({
@@ -504,20 +412,26 @@ const UserProfile = () => {
                     >
                       {updatedCurrentUser?.data?.followings?.length ? (
                         updatedCurrentUser?.data?.followings?.map(
-                          (user: TUpdatedUser) => (
+                          (user: TFollowUser) => (
                             <div
                               key={user._id}
-                              className="flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
+                              className="w-[158px] flex items-center space-x-2 bg-gray-50 p-2 rounded-lg shadow-md overflow-hidden"
                             >
                               <Image
                                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                                 alt="profile picture"
-                                width={50}
-                                height={50}
+                                width={40}
+                                height={40}
                                 className="rounded-full"
                               />
                               <div>
-                                <p>{user?.name}</p>
+                                <p className="text-sm text-nowrap">
+                                  {user?.name}
+                                  {/* {user?.name?.length <= 11
+                                    ? user.name
+                                    : user?.name?.slice(0, 10) +
+                                      (user?.name?.length > 10 ? "..." : "")} */}
+                                </p>
                                 <button
                                   onClick={() =>
                                     handleUnFollowToggle(user?._id)
@@ -537,28 +451,34 @@ const UserProfile = () => {
                     </motion.div>
                   </div>
 
-                  {/* followings list */}
+                  {/* followers list */}
                   <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Followers</h2>
                     <div className="flex flex-wrap gap-4">
                       {updatedCurrentUser?.data?.followers?.length ? (
                         updatedCurrentUser?.data?.followers?.map(
-                          (user: TUpdatedUser) => (
+                          (user: TFollowUser) => (
                             <motion.div
                               initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 1 }}
                               key={user._id}
-                              className=" flex items-center space-x-4 bg-gray-50 p-2 rounded-lg shadow-md"
+                              className="w-[158px] flex items-center space-x-2 bg-gray-50 p-2 rounded-lg shadow-md overflow-hidden"
                             >
                               <Image
                                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                                 alt="profile picture"
-                                width={50}
-                                height={50}
+                                width={40}
+                                height={40}
                                 className="rounded-full"
                               />
-                              <span>{user?.name}</span>
+                              <span className="text-sm">
+                                {user?.name}
+                                {/* {user?.name?.length <= 11
+                                  ? user.name
+                                  : user?.name?.slice(0, 10) +
+                                    (user?.name?.length > 10 ? "..." : "")} */}
+                              </span>
                             </motion.div>
                           )
                         )

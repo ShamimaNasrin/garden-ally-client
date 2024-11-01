@@ -105,3 +105,20 @@ export type TNewsPost = {
   createdAt: string;
   updatedAt: string;
 };
+
+// user profile and dashboard
+
+export type TFollowUser = {
+  _id: string;
+  name: string;
+  profilePhoto?: string;
+};
+
+export type TFavouritePost = {
+  _id: string;
+  authorId: string;
+  title: string;
+  description: string;
+  images?: string;
+  category: string;
+};
