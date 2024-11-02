@@ -18,8 +18,11 @@ import {
   useFetchUserByIdQuery,
   useGetFollowSuggestionQuery,
   useUnFollowMutation,
+  useUpdateUserProfileMutation,
 } from "@/redux/features/user/userApi";
 import FavoritePostSection from "@/components/profile/FavoritePostSection";
+import { SubmitHandler, useForm } from "react-hook-form";
+import UploadImgToImgBB from "@/components/profile/UploadImgToImgBB";
 
 export interface TUserForm {
   _id?: string;
@@ -73,6 +76,13 @@ export interface FollowSuggestion {
   followings: string[];
 }
 
+interface TUpdateUserForm {
+  name: string;
+  phone: string;
+  address: string;
+  profilePhoto: string;
+}
+
 const UserProfile = () => {
   const currentUser = useAppSelector(useCurrentUser);
   const { data: postData, isLoading: postLoading } = useGetMyPostsQuery(
@@ -84,8 +94,24 @@ const UserProfile = () => {
     useFetchUserByIdQuery(currentUser?._id);
   const [addFollow, { isLoading: isFollowLoading }] = useAddFollowMutation();
   const [unFollow, { isLoading: isUnFollowLoading }] = useUnFollowMutation();
+  const [updateUserProfile, { isLoading: isUpdating }] =
+    useUpdateUserProfileMutation();
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<TUpdateUserForm>({
+    defaultValues: {
+      name: updatedCurrentUser?.name || "",
+      phone: updatedCurrentUser?.phone || "",
+      address: updatedCurrentUser?.address || "",
+      // profilePhoto: updatedCurrentUser?.profilePhoto || "",
+    },
+  });
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userLoading, setUserLoading] = useState(false);
@@ -99,82 +125,62 @@ const UserProfile = () => {
     }
   }, [currentUser]);
 
-  const [formData, setFormData] = useState<TUserForm>({
-    name: currentUser?.name || "",
-    phone: currentUser?.phone || "",
-    address: currentUser?.address || "",
-    profilePhoto: currentUser?.profilePhoto || "",
-  });
+  // update user profile
+  // useEffect(() => {
+  //   if (updatedCurrentUser) {
+  //     reset({
+  //       name: updatedCurrentUser?.data?.name || "",
+  //       phone: updatedCurrentUser?.data?.phone || "",
+  //       address: updatedCurrentUser?.data?.address || "",
+  //       profilePhoto: updatedCurrentUser?.data?.profilePhoto || "",
+  //     });
+  //   }
+  // }, [updatedCurrentUser, reset]);
 
-  // const {
-  //   data: updatedUser,
-  //   mutate: updateUserProfile,
-  //   isSuccess: isUpdateProfileTrue,
-  // } = useUpdateUserProfile(currentUser?._id || "");
-
-  // console.log("updated user: ", updatedUser);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    setErrorMessage("");
-  };
-
-  const handleUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // console.log("userLoading:", userLoading);
-
-    if (formData.name.length === 0) {
-      console.log("name:", currentUser?.name);
-      setFormData({
-        ...formData,
-        name: currentUser?.name || "",
-      });
+  useEffect(() => {
+    if (updatedCurrentUser) {
+      setValue("name", updatedCurrentUser?.data?.name);
+      setValue("phone", updatedCurrentUser?.data?.phone);
+      setValue("address", updatedCurrentUser?.data?.address);
     }
-    if (formData.phone.length === 0) {
-      console.log("phone:", currentUser?.phone);
-      setFormData({
-        ...formData,
-        phone: currentUser?.phone || "",
-      });
-    }
-    if (formData.address.length === 0) {
-      console.log("address:", currentUser?.address);
-      setFormData({
-        ...formData,
-        address: currentUser?.address || "",
-      });
-    }
-    if (formData.profilePhoto.length === 0) {
-      console.log("profilePhoto:", currentUser?.profilePhoto);
-      setFormData({
-        ...formData,
-        profilePhoto: currentUser?.profilePhoto || "",
-      });
+  }, [updatedCurrentUser, setValue]);
+
+  const onSubmit: SubmitHandler<TUpdateUserForm> = async (data) => {
+    // console.log("formdata:", data);
+
+    if (data.profilePhoto && data.profilePhoto.length) {
+      console.log("default img:", data.profilePhoto);
+      try {
+        const file = data.profilePhoto[0] as any;
+        const imgBBUrl = await UploadImgToImgBB(file);
+        data.profilePhoto = imgBBUrl;
+      } catch (error: any) {
+        toast.error(error.data.message, { duration: 1000 });
+        return;
+      }
+    } else {
+      data.profilePhoto = "";
     }
 
-    console.log("update user:", formData);
+    const userData = {
+      name: data.name || updatedCurrentUser?.data?.name,
+      phone: data.phone || updatedCurrentUser?.data?.phone,
+      address: data.address || updatedCurrentUser?.data?.address,
+      profilePhoto: data.profilePhoto || updatedCurrentUser?.data?.profilePhoto,
+    };
 
-    if (
-      formData.name.length ||
-      formData.phone.length ||
-      formData.address.length ||
-      formData.profilePhoto.length
-    ) {
-      // updateUserProfile(formData);
+    // console.log("userData:", userData);
+
+    try {
+      await updateUserProfile({
+        userId: currentUser && currentUser?._id,
+        updatedInfo: userData,
+      }).unwrap();
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update profile.");
     }
-
-    // if (isUpdateProfileTrue) {
-    //   toast.success("Profile updated");
-    // }
-    // If all URLs are valid, proceed with form submission
-    setErrorMessage("");
   };
 
   // Handle follow user
@@ -183,7 +189,7 @@ const UserProfile = () => {
     if (currentUser) {
       try {
         await addFollow({
-          userId: currentUser._id,
+          userId: currentUser?._id,
           followId,
         }).unwrap();
         toast.success(`Successfully follow user`);
@@ -200,7 +206,7 @@ const UserProfile = () => {
     if (currentUser) {
       try {
         await unFollow({
-          userId: currentUser._id,
+          userId: currentUser?._id,
           followingId,
         }).unwrap();
         toast.success(`Successfully unfollow user`);
@@ -229,24 +235,24 @@ const UserProfile = () => {
         <LoadingSpinner />
       ) : (
         <>
-          {currentUser && (
+          {updatedCurrentUser?.data && (
             <>
               {/* name and image */}
               <div className="flex flex-col items-center p-6">
                 <Image
-                  src={currentUser?.profilePhoto}
+                  src={updatedCurrentUser?.data?.profilePhoto}
                   alt="Profile Picture"
                   width={150}
                   height={150}
                   className="rounded-full mb-4 shadow-lg"
                 />
                 <h1 className="text-2xl font-semibold flex items-center">
-                  {currentUser?.name}
-                  {currentUser?.isVerified && (
+                  {updatedCurrentUser?.data?.name}
+                  {updatedCurrentUser?.data?.isVerified && (
                     <FaCheckCircle className="text-blue-500 ml-2" />
                   )}
                 </h1>
-                {!currentUser?.isVerified && (
+                {!updatedCurrentUser?.data?.isVerified && (
                   <button
                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     onClick={handleVerification}
@@ -306,59 +312,86 @@ const UserProfile = () => {
                 {/* update user INfo */}
                 <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8 px-4 rounded-lg ">
                   <>
-                    <h2 className="text-xl font-semibold mb-4">User Info</h2>
+                    <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
                     <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
-                      <form onSubmit={handleUpdateUser} className="space-y-4">
-                        <div className="flex flex-col">
-                          <label className="font-medium">Name</label>
+                      <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Name
+                          </label>
                           <input
-                            type="text"
-                            name="name"
-                            // value={formData.name}
-                            placeholder={currentUser.name}
-                            onChange={handleChange}
-                            className="border p-2 rounded"
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                            {...register("name", {
+                              required: "Name is required",
+                            })}
                           />
+                          {errors.name && (
+                            <p className="text-red-500 text-sm">
+                              {errors.name.message}
+                            </p>
+                          )}
                         </div>
-                        <div className="flex flex-col">
-                          <label className="font-medium">Phone</label>
+
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Phone
+                          </label>
                           <input
-                            type="number"
-                            // value={currentUser.phone}
-                            placeholder={currentUser.phone}
-                            name="phone"
-                            onChange={handleChange}
-                            className="border p-2 rounded"
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                            {...register("phone", {
+                              required: "Phone number is required",
+                            })}
                           />
+                          {errors.phone && (
+                            <p className="text-red-500 text-sm">
+                              {errors.phone.message}
+                            </p>
+                          )}
                         </div>
-                        <div className="flex flex-col">
-                          <label className="font-medium">Address</label>
+
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Address
+                          </label>
                           <input
-                            type="text"
-                            // value={formData.address}
-                            placeholder={currentUser.address}
-                            name="address"
-                            onChange={handleChange}
-                            className="border p-2 rounded"
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                            {...register("address", {
+                              required: "Address number is required",
+                            })}
                           />
+                          {errors.address && (
+                            <p className="text-red-500 text-sm">
+                              {errors.address.message}
+                            </p>
+                          )}
                         </div>
-                        <div className="flex flex-col">
-                          <label className="font-medium">Image Url</label>
+
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Profile Photo
+                          </label>
                           <input
-                            type="text"
-                            // value={formData.profilePhoto}
-                            placeholder={currentUser.profilePhoto}
-                            name="profilePhoto"
-                            onChange={handleChange}
-                            className="border p-2 rounded"
+                            type="file"
+                            accept="image/*"
+                            placeholder="Add image"
+                            {...register("profilePhoto")}
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                           />
+                          {errors.profilePhoto && (
+                            <p className="text-red-500 text-sm">
+                              {errors.profilePhoto.message}
+                            </p>
+                          )}
                         </div>
+
                         <button
                           type="submit"
-                          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
-                          disabled={errorMessage !== ""}
+                          className={`px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 ${
+                            isUpdating ? "opacity-50" : ""
+                          }`}
+                          disabled={isUpdating}
                         >
-                          Update Info
+                          {isUpdating ? "Updating..." : "Update Profile"}
                         </button>
                       </form>
                     </div>
@@ -451,10 +484,6 @@ const UserProfile = () => {
                               <div>
                                 <p className="text-sm text-nowrap line-clamp-1">
                                   {user?.name}
-                                  {/* {user?.name?.length <= 11
-                                    ? user.name
-                                    : user?.name?.slice(0, 10) +
-                                      (user?.name?.length > 10 ? "..." : "")} */}
                                 </p>
                                 <button
                                   onClick={() =>

@@ -133,7 +133,7 @@ const EditPostModal = ({ post, closeModal }: EditPostModalProps) => {
             type="file"
             className="w-full p-2 mb-4 border rounded"
             accept="image/*"
-            placeholder="Image URL"
+            placeholder="Add image"
             {...register("images")}
           />
           {errors.images && (
