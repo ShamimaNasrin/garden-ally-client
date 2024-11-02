@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { useGetMyPostsQuery } from "@/redux/features/post/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
-import { IUser, TFollowUser, TNewsPost } from "@/types";
+import { IUser, TFavouritePost, TFollowUser, TNewsPost } from "@/types";
 import NoDataFound from "@/components/UI/NoDataFound";
 import {
   useAddFollowMutation,
@@ -19,6 +19,7 @@ import {
   useGetFollowSuggestionQuery,
   useUnFollowMutation,
 } from "@/redux/features/user/userApi";
+import FavoritePostSection from "@/components/profile/FavoritePostSection";
 
 export interface TUserForm {
   _id?: string;
@@ -303,100 +304,123 @@ const UserProfile = () => {
 
               <div className="bg-zinc-100 py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
                 {/* update user INfo */}
-                <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8  p-4 rounded-lg ">
-                  <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
+                <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8 px-4 rounded-lg ">
+                  <>
                     <h2 className="text-xl font-semibold mb-4">User Info</h2>
-                    <form onSubmit={handleUpdateUser} className="space-y-4">
-                      <div className="flex flex-col">
-                        <label className="font-medium">Name</label>
-                        <input
-                          type="text"
-                          name="name"
-                          // value={formData.name}
-                          placeholder={currentUser.name}
-                          onChange={handleChange}
-                          className="border p-2 rounded"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label className="font-medium">Phone</label>
-                        <input
-                          type="number"
-                          // value={currentUser.phone}
-                          placeholder={currentUser.phone}
-                          name="phone"
-                          onChange={handleChange}
-                          className="border p-2 rounded"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label className="font-medium">Address</label>
-                        <input
-                          type="text"
-                          // value={formData.address}
-                          placeholder={currentUser.address}
-                          name="address"
-                          onChange={handleChange}
-                          className="border p-2 rounded"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label className="font-medium">Image Url</label>
-                        <input
-                          type="text"
-                          // value={formData.profilePhoto}
-                          placeholder={currentUser.profilePhoto}
-                          name="profilePhoto"
-                          onChange={handleChange}
-                          className="border p-2 rounded"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
-                        disabled={errorMessage !== ""}
-                      >
-                        Update Info
-                      </button>
-                    </form>
-                  </div>
+                    <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
+                      <form onSubmit={handleUpdateUser} className="space-y-4">
+                        <div className="flex flex-col">
+                          <label className="font-medium">Name</label>
+                          <input
+                            type="text"
+                            name="name"
+                            // value={formData.name}
+                            placeholder={currentUser.name}
+                            onChange={handleChange}
+                            className="border p-2 rounded"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="font-medium">Phone</label>
+                          <input
+                            type="number"
+                            // value={currentUser.phone}
+                            placeholder={currentUser.phone}
+                            name="phone"
+                            onChange={handleChange}
+                            className="border p-2 rounded"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="font-medium">Address</label>
+                          <input
+                            type="text"
+                            // value={formData.address}
+                            placeholder={currentUser.address}
+                            name="address"
+                            onChange={handleChange}
+                            className="border p-2 rounded"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="font-medium">Image Url</label>
+                          <input
+                            type="text"
+                            // value={formData.profilePhoto}
+                            placeholder={currentUser.profilePhoto}
+                            name="profilePhoto"
+                            onChange={handleChange}
+                            className="border p-2 rounded"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                          disabled={errorMessage !== ""}
+                        >
+                          Update Info
+                        </button>
+                      </form>
+                    </div>
+                  </>
 
-                  <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
+                  {/* Change password */}
+                  <>
                     <h2 className="text-xl font-semibold mb-4">
                       Change Password
                     </h2>
-                    <form onSubmit={handleChangePassword} className="space-y-4">
-                      <div className="flex flex-col">
-                        <label className="font-medium">Old Password</label>
-                        <input
-                          type="text"
-                          placeholder="Old Password"
-                          name="oldPassword"
-                          onChange={(e) => setOldPassword(e.target.value)}
-                          className="border p-2 rounded"
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <label className="font-medium">New Password</label>
-                        <input
-                          type="tel"
-                          placeholder="New Password"
-                          name="newPassword"
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          className="border p-2 rounded"
-                          required
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                    <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
+                      <form
+                        onSubmit={handleChangePassword}
+                        className="space-y-4"
                       >
-                        Confirm
-                      </button>
-                    </form>
-                  </div>
+                        <div className="flex flex-col">
+                          <label className="font-medium">Old Password</label>
+                          <input
+                            type="text"
+                            placeholder="Old Password"
+                            name="oldPassword"
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            className="border p-2 rounded"
+                            required
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="font-medium">New Password</label>
+                          <input
+                            type="tel"
+                            placeholder="New Password"
+                            name="newPassword"
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="border p-2 rounded"
+                            required
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                        >
+                          Confirm
+                        </button>
+                      </form>
+                    </div>
+                  </>
+
+                  {/* favorite post */}
+                  <>
+                    <h1 className="text-xl font-semibold mb-4">Favorites</h1>
+
+                    {updatedCurrentUser?.data?.favouritePosts?.length ? (
+                      updatedCurrentUser?.data?.favouritePosts?.map(
+                        (post: TFavouritePost) => (
+                          <FavoritePostSection key={post._id} post={post} />
+                        )
+                      )
+                    ) : (
+                      <NoDataFound />
+                    )}
+                  </>
                 </div>
 
                 {/* followings and post */}
@@ -425,7 +449,7 @@ const UserProfile = () => {
                                 className="rounded-full"
                               />
                               <div>
-                                <p className="text-sm text-nowrap">
+                                <p className="text-sm text-nowrap line-clamp-1">
                                   {user?.name}
                                   {/* {user?.name?.length <= 11
                                     ? user.name
@@ -472,12 +496,8 @@ const UserProfile = () => {
                                 height={40}
                                 className="rounded-full"
                               />
-                              <span className="text-sm">
+                              <span className="text-sm line-clamp-2">
                                 {user?.name}
-                                {/* {user?.name?.length <= 11
-                                  ? user.name
-                                  : user?.name?.slice(0, 10) +
-                                    (user?.name?.length > 10 ? "..." : "")} */}
                               </span>
                             </motion.div>
                           )

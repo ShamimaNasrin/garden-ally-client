@@ -39,7 +39,7 @@ const PostCard = ({ post }: TPostProps) => {
   const [userLoading, setUserLoading] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  console.log("updatedCurrentUser:", updatedCurrentUser);
+  // console.log("updatedCurrentUser:", updatedCurrentUser);
 
   useEffect(() => {
     if (currentUser) {
