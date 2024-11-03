@@ -153,6 +153,10 @@ const AdminProfile = () => {
                         className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                         {...register("phone", {
                           required: "Phone number is required",
+                          minLength: {
+                            value: 8,
+                            message: "Phone must be at least 8 characters long",
+                          },
                         })}
                       />
                       {errors.phone && (

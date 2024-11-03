@@ -58,7 +58,6 @@ const PostDetails = ({ params: { postId } }: TPostDetailsProps) => {
   const [newComment, setNewComment] = useState("");
   const [existCommentEdit, setExistCommentEdit] = useState("");
   const [selectedComment, setSelectedComment] = useState<TComment | null>(null);
-  // const [isCommentDelete, setIsCommentDelete] = useState(false);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);

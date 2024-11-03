@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useState } from "react";
 import Image from "next/image";
@@ -8,45 +8,35 @@ import NoDataFound from "@/components/UI/NoDataFound";
 import { FiTrash2 } from "react-icons/fi";
 import ConfirmationModal from "@/components/UI/ConfirmationModal";
 import LoadingSpinner from "@/components/UI/LoadingSpinner";
-
-// Sample post data
-const posts = [
-  {
-    id: "1",
-    authorId: "user1",
-    authorName: "John",
-    title: "Post 1",
-    description: "This is the first post.",
-    images: "https://i.ibb.co/YDnvjCd/garden2.jpg",
-    isPremium: true,
-    isUserVerified: false,
-    category: "Flowers",
-    upVoteNumber: 10,
-    downVoteNumber: 20,
-  },
-  {
-    id: "2",
-    authorId: "user2",
-    authorName: "Alex",
-    title: "Post 2",
-    description: "This is the second post.",
-    images: "https://i.ibb.co/YDnvjCd/garden2.jpg",
-    isPremium: false,
-    isUserVerified: false,
-    category: "Vegetables",
-    upVoteNumber: 90,
-    downVoteNumber: 5,
-  },
-];
+import {
+  useDeletePostMutation,
+  useGetAllPostsQuery,
+} from "@/redux/features/post/postApi";
+import { TNewsPost } from "@/types";
 
 const headings = ["Image", "Post ID", "Author", "Title", "Category", "Actions"];
 
 const ContentManagement: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: posts, isLoading: postLoading } = useGetAllPostsQuery({});
+  const [deletePost] = useDeletePostMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleDelete = async (postId: string) => {
-    toast.success("Content deleted successfully!");
+  // delete post
+  const handleDeletePost = async (postId: string) => {
+    // console.log("post deleted:", postId);
+
+    try {
+      const res = await deletePost(postId).unwrap();
+      // console.log("delete res:", res);
+      if (res?.success) {
+        console.log("delete res:", res?.message);
+        toast.success("Post deleted successfully!");
+        // router.push("/");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to Delete a post");
+    }
     setShowDeleteModal(false);
   };
 
@@ -55,7 +45,7 @@ const ContentManagement: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8 text-emerald-500">
         Content Management
       </h1>
-      {isLoading ? (
+      {postLoading ? (
         <LoadingSpinner />
       ) : (
         <div className="overflow-x-auto w-full">
@@ -73,32 +63,37 @@ const ContentManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {posts?.length ? (
-                posts?.map((post) => (
+              {posts?.data?.length ? (
+                posts?.data?.map((post: TNewsPost) => (
                   <tr
-                    key={post.id}
+                    key={post?._id}
                     className="hover:bg-violet-50 transition-colors duration-200"
                   >
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      <Image
-                        src={post.images}
-                        alt={post.title}
-                        width={50}
-                        height={50}
-                        className="rounded"
-                      />
+                      <div className="w-[60px] h-[50px]">
+                        <Image
+                          src={post?.images}
+                          alt={post?.title}
+                          width={60}
+                          height={50}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      </div>
                     </td>
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post.id}
+                      {post?._id}
                     </td>
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post.authorName}
+                      {post?.authorId?.name}
                     </td>
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[150px]">
-                      {post.title}
+                      {post?.title?.length <= 26
+                        ? post?.title
+                        : post?.title?.slice(0, 26) +
+                          (post?.title?.length > 26 ? "..." : "")}
                     </td>
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post.category}
+                      {post?.category}
                     </td>
                     <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
                       <button
@@ -110,7 +105,7 @@ const ContentManagement: React.FC = () => {
                       <ConfirmationModal
                         isOpen={showDeleteModal}
                         onClose={() => setShowDeleteModal(false)}
-                        onConfirm={() => handleDelete(post?.id)}
+                        onConfirm={() => handleDeletePost(post?._id)}
                       />
                     </td>
                   </tr>

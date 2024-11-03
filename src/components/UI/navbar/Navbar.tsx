@@ -18,7 +18,7 @@ import { RiCloseLine, RiUserLine } from "react-icons/ri";
 const Navbar = () => {
   const links = [
     { name: "Home", path: "/" },
-    { name: "News Feed", path: "/news-feed" },
+    // { name: "News Feed", path: "/news-feed" },
     { name: "About Us", path: "/aboutus" },
     { name: "Contact Us", path: "/contactus" },
   ];
@@ -87,6 +87,12 @@ const Navbar = () => {
               <Link href={link.path}>{link.name}</Link>
             </li>
           ))}
+
+          {currentUser?.role === "user" && (
+            <li className="md:ml-8 text-base md:my-0 my-7 text-black hover:text-gray-400 duration-500">
+              <Link href="/news-feed">News Feed</Link>
+            </li>
+          )}
 
           {/* Dropdown */}
           <div className="relative md:ml-8">
