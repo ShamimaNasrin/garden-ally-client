@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -23,21 +23,7 @@ import {
 import FavoritePostSection from "@/components/profile/FavoritePostSection";
 import { SubmitHandler, useForm } from "react-hook-form";
 import UploadImgToImgBB from "@/components/profile/UploadImgToImgBB";
-
-export interface TUserForm {
-  _id?: string;
-  role?: string;
-  email?: string;
-  name: string;
-  phone: string;
-  address: string;
-  profilePhoto: string;
-  favouritePosts?: Array<any>;
-  isVerified?: boolean;
-  followers?: string[];
-  followings?: string[];
-  isDeleted?: boolean;
-}
+import ChangePassword from "@/components/profile/ChangePassword";
 
 // const posts = [
 //   {
@@ -101,7 +87,7 @@ const UserProfile = () => {
     register,
     handleSubmit,
     setValue,
-    reset,
+    // reset,
     formState: { errors },
   } = useForm<TUpdateUserForm>({
     defaultValues: {
@@ -112,8 +98,6 @@ const UserProfile = () => {
     },
   });
 
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [userLoading, setUserLoading] = useState(false);
 
   // console.log("user post: ", postData);
@@ -219,14 +203,6 @@ const UserProfile = () => {
 
   const handleVerification = () => {
     console.log("handleVerification");
-  };
-
-  const handleChangePassword = () => {
-    if (!oldPassword?.length || !newPassword?.length) {
-      console.log("Password change:", oldPassword, newPassword);
-      toast.error("Please provide your old and new password");
-      return;
-    }
   };
 
   return (
@@ -340,6 +316,11 @@ const UserProfile = () => {
                             className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                             {...register("phone", {
                               required: "Phone number is required",
+                              minLength: {
+                                value: 8,
+                                message:
+                                  "Phone must be at least 8 characters long",
+                              },
                             })}
                           />
                           {errors.phone && (
@@ -403,40 +384,7 @@ const UserProfile = () => {
                       Change Password
                     </h2>
                     <div className="mb-5 rounded-lg shadow-md p-4 bg-gray-50">
-                      <form
-                        onSubmit={handleChangePassword}
-                        className="space-y-4"
-                      >
-                        <div className="flex flex-col">
-                          <label className="font-medium">Old Password</label>
-                          <input
-                            type="text"
-                            placeholder="Old Password"
-                            name="oldPassword"
-                            onChange={(e) => setOldPassword(e.target.value)}
-                            className="border p-2 rounded"
-                            required
-                          />
-                        </div>
-                        <div className="flex flex-col">
-                          <label className="font-medium">New Password</label>
-                          <input
-                            type="tel"
-                            placeholder="New Password"
-                            name="newPassword"
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            className="border p-2 rounded"
-                            required
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
-                        >
-                          Confirm
-                        </button>
-                      </form>
+                      <ChangePassword />
                     </div>
                   </>
 

@@ -1,19 +1,19 @@
 "use client";
 
 import { protectedRoutes } from "@/constant";
-import { tokenVerify } from "@/lib/tokenVerify";
-import { logOut, useCurrentToken } from "@/redux/features/auth/authSlice";
+// import { tokenVerify } from "@/lib/tokenVerify";
+import { logOut, useCurrentUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { removeTokenFromCookies } from "@/service/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+// import React, { useEffect } from "react";
 import { useState } from "react";
 import { RiCloseLine, RiUserLine } from "react-icons/ri";
 
-type TLoginUser = {
-  role: "user" | "admin";
-};
+// type TLoginUser = {
+//   role: "user" | "admin";
+// };
 
 const Navbar = () => {
   const links = [
@@ -25,30 +25,24 @@ const Navbar = () => {
 
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const router = useRouter();
   const pathname = usePathname();
 
-  // const userDetails = {
-  //   name: "shamima",
-  //   role: "user",
-  // };
-
   const dispatch = useAppDispatch();
-  const currentToken = useAppSelector(useCurrentToken);
-  // const currentUser = useAppSelector(useCurrentUser);
-
+  const currentUser = useAppSelector(useCurrentUser);
   // console.log("currentUser: ", currentUser);
-  const [userDetails, setUserDetails] = useState<TLoginUser | null>(null);
 
-  useEffect(() => {
-    if (currentToken) {
-      const decodedUser = tokenVerify(currentToken);
-      setUserDetails(decodedUser);
-    } else {
-      setUserDetails(null);
-    }
-  }, [currentToken]);
+  // const currentToken = useAppSelector(useCurrentToken);
+  // const [userDetails, setUserDetails] = useState<TLoginUser | null>(null);
+
+  // useEffect(() => {
+  //   if (currentToken) {
+  //     const decodedUser = tokenVerify(currentToken);
+  //     setUserDetails(decodedUser);
+  //   } else {
+  //     setUserDetails(null);
+  //   }
+  // }, [currentToken]);
 
   // console.log("saved user details:", userDetails);
 
@@ -105,12 +99,12 @@ const Navbar = () => {
 
             {dropdownOpen && (
               <ul className="absolute right-0 md:left-auto left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2">
-                {userDetails ? (
+                {currentUser ? (
                   <>
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link
                         href={
-                          userDetails.role === "user"
+                          currentUser?.role === "user"
                             ? "/user-dashboard"
                             : "/admin-dashboard"
                         }
@@ -122,7 +116,7 @@ const Navbar = () => {
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link
                         href={
-                          userDetails.role === "user"
+                          currentUser?.role === "user"
                             ? "/user-profile"
                             : "/admin-profile"
                         }
