@@ -19,6 +19,7 @@ import {
   useGetFollowSuggestionQuery,
   useUnFollowMutation,
   useUpdateUserProfileMutation,
+  useVerifyProfileMutation,
 } from "@/redux/features/user/userApi";
 import FavoritePostSection from "@/components/profile/FavoritePostSection";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -82,6 +83,8 @@ const UserProfile = () => {
   const [unFollow, { isLoading: isUnFollowLoading }] = useUnFollowMutation();
   const [updateUserProfile, { isLoading: isUpdating }] =
     useUpdateUserProfileMutation();
+  const [verifyProfile, { isLoading: isPaymentLoading }] =
+    useVerifyProfileMutation();
 
   const {
     register,
@@ -201,8 +204,43 @@ const UserProfile = () => {
     }
   };
 
-  const handleVerification = () => {
-    console.log("handleVerification");
+  const handleVerification = async () => {
+    if (currentUser) {
+      const postUpVoteNumber = postData?.data?.reduce(
+        (acc: number, post: TNewsPost) => acc + post.upVoteNumber,
+        0
+      );
+
+      // console.log("postUpVoteNumber:", postUpVoteNumber);
+
+      if (postUpVoteNumber <= 0) {
+        toast.error("To verify at least 1 upvote is required");
+        return;
+      }
+
+      if (isPaymentLoading) {
+        toast("Payment Loading...");
+        return;
+      }
+
+      try {
+        const payRes = await verifyProfile(currentUser._id).unwrap();
+
+        // console.log("verification res:", payRes);
+        if (
+          payRes?.message === "Payment successful" &&
+          payRes?.data?.payment_url
+        ) {
+          window.location.href = payRes?.data?.payment_url;
+        } else {
+          toast.error("Payment failed");
+        }
+        // toast.success(`Account verification Successful`);
+      } catch (error) {
+        console.error("Failed to verify account:", error);
+        toast.error(`Failed to verify account`);
+      }
+    }
   };
 
   return (

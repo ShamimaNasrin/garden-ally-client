@@ -50,18 +50,18 @@ const PostCard = ({ post }: TPostProps) => {
   useEffect(() => {
     if (updatedCurrentUser) {
       const isMatched = updatedCurrentUser?.data?.favouritePosts.some(
-        (favPost: TFavouritePost) => favPost._id === post._id
+        (favPost: TFavouritePost) => favPost?._id === post?._id
       );
       if (isMatched) setIsFavorited(true);
     }
-  }, [updatedCurrentUser, post._id]);
+  }, [updatedCurrentUser, post?._id]);
 
   const handleFavoriteClick = async () => {
     try {
       if (currentUser) {
         const paramObj = {
-          userId: currentUser._id,
-          postId: post._id,
+          userId: currentUser?._id,
+          postId: post?._id,
         };
 
         // console.log("paramObj:", paramObj);
@@ -91,8 +91,8 @@ const PostCard = ({ post }: TPostProps) => {
     }
 
     const voteObj = {
-      postId: post._id,
-      userId: currentUser._id,
+      postId: post?._id,
+      userId: currentUser?._id,
       voteType: voteType,
     };
 
@@ -110,7 +110,7 @@ const PostCard = ({ post }: TPostProps) => {
 
   // share copy to clipboard feature
   const handleShare = async () => {
-    const postUrl = `${window.location.origin}/news-feed/${post._id}`;
+    const postUrl = `${window.location.origin}/news-feed/${post?._id}`;
     try {
       await navigator.clipboard.writeText(postUrl);
       toast.success("Post link copied to clipboard!");
@@ -146,7 +146,7 @@ const PostCard = ({ post }: TPostProps) => {
                 onClick={handleFavoriteClick}
                 disabled={
                   post?.isPremium &&
-                  !currentUser?.isVerified &&
+                  !updatedCurrentUser?.data?.isVerified &&
                   currentUser?._id !== post?.authorId?._id
                 }
               >
@@ -159,13 +159,13 @@ const PostCard = ({ post }: TPostProps) => {
             <div
               className={
                 post?.isPremium &&
-                !currentUser?.isVerified &&
+                !updatedCurrentUser?.data?.isVerified &&
                 currentUser?._id !== post?.authorId?._id
                   ? "blur-sm"
                   : ""
               }
             >
-              <Link href={`/news-feed/${post._id}`}>
+              <Link href={`/news-feed/${post?._id}`}>
                 <div>
                   <h3 className="text-lg font-semibold my-1">{post?.title}</h3>
                   {/* <p className="text-gray-600 text-sm mb-2">
@@ -218,7 +218,7 @@ const PostCard = ({ post }: TPostProps) => {
 
                 <div className="flex items-center gap-1 text-gray-500">
                   <FaComment />{" "}
-                  <Link href={`/news-feed/${post._id}`}>
+                  <Link href={`/news-feed/${post?._id}`}>
                     <span className="text-sm cursor-pointer">
                       {" "}
                       {post?.comments?.length} Comments
@@ -237,7 +237,7 @@ const PostCard = ({ post }: TPostProps) => {
             </div>
 
             {post?.isPremium &&
-              !currentUser?.isVerified &&
+              !updatedCurrentUser?.data?.isVerified &&
               currentUser?._id !== post?.authorId?._id && (
                 <div className="absolute inset-0 bg-white/30 text-lg flex items-center justify-center text-black font-bold">
                   Premium Content
