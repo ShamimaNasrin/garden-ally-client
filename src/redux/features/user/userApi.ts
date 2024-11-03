@@ -4,11 +4,21 @@ const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Query to fetch all user
     fetchAllUser: builder.query({
-      query: () => ({
-        url: "/users",
+      query: (adminId) => ({
+        url: `/users/getAllUsers/${adminId}`,
         method: "GET",
       }),
       providesTags: ["user"],
+    }),
+
+    // Mutation to modify the user role
+    modifyUserRole: builder.mutation({
+      query: ({ userId, updatedInfo }) => ({
+        url: `/users/${userId}`,
+        method: "PATCH",
+        body: updatedInfo,
+      }),
+      invalidatesTags: ["user"],
     }),
 
     // Query to fetch A user by ID
@@ -27,16 +37,6 @@ const userApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["user"],
-    }),
-
-    // Mutation to modify the user role
-    modifyUserRole: builder.mutation({
-      query: ({ userId, updatedInfo }) => ({
-        url: `/users/${userId}`,
-        method: "PATCH",
-        body: updatedInfo,
-      }),
-      invalidatesTags: ["user"],
     }),
 
     // Mutation to modify the user profile
@@ -120,9 +120,9 @@ const userApi = baseApi.injectEndpoints({
 
 export const {
   useFetchAllUserQuery,
+  useModifyUserRoleMutation,
   useFetchUserByIdQuery,
   useFetchUserByEmailQuery,
-  useModifyUserRoleMutation,
   useUpdateUserProfileMutation,
   useGetFollowSuggestionQuery,
   useAddFollowMutation,
