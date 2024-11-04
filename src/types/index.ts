@@ -122,3 +122,22 @@ export type TFavouritePost = {
   images?: string;
   category: string;
 };
+
+// admin dashboard - payment history
+type Customer = {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  profilePhoto: string;
+  isVerified: boolean;
+};
+
+export type TPaymentHistory = {
+  _id: string;
+  customerId: Customer;
+  transactionId: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
