@@ -1,13 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type TPost = {
-  _id: string;
-  status: string;
-  description: string;
-  feedback: string | null;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-};
 
 export type TRegisterUser = {
   name: string;

@@ -3,7 +3,6 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-// import { useState } from "react";
 // import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -26,7 +25,6 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<TLoginFormInput>();
-  // const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -151,7 +149,7 @@ const LoginPage = () => {
                 href="/register"
                 className="text-emerald-500 hover:text-emerald-600 font-semibold"
               >
-                <span className="">Sign up</span>
+                <span className=""> Sign up</span>
               </Link>
             </p>
           </div>

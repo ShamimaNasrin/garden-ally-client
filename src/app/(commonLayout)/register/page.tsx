@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import UploadImgToImgBB from "@/components/profile/UploadImgToImgBB";
 // import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import { useSignupMutation } from "@/redux/features/auth/authApi";
 import Link from "next/link";
@@ -33,7 +35,23 @@ const SignupPage = () => {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<TRegisterFormInput> = async (data) => {
-    // console.log(data);
+    // console.log("formdata:", data);
+
+    if (data.profilePhoto && data.profilePhoto.length) {
+      console.log("default img:", data.profilePhoto);
+      try {
+        const file = data.profilePhoto[0] as any;
+        const imgBBUrl = await UploadImgToImgBB(file);
+        data.profilePhoto = imgBBUrl;
+      } catch (error: any) {
+        toast.error(error.data.message, { duration: 1000 });
+        return;
+      }
+    } else {
+      data.profilePhoto =
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+    }
+
     const userInfo = {
       ...data,
       role: "user",
@@ -178,21 +196,21 @@ const SignupPage = () => {
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="profilePhoto"
             >
-              Image URL
+              Profile Photo
             </label>
             <input
-              type="text"
+              type="file"
+              accept="image/*"
+              placeholder="Add image"
               id="profilePhoto"
-              {...register("profilePhoto", {
-                required: "Image url is required",
-              })}
+              {...register("profilePhoto")}
               className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                errors.name ? "border-red-500" : "border-gray-300"
+                errors.profilePhoto ? "border-red-500" : "border-gray-300"
               }`}
             />
-            {errors.name && (
+            {errors.profilePhoto && (
               <p className="text-red-500 text-xs italic">
-                {errors.name.message}
+                {errors.profilePhoto.message}
               </p>
             )}
           </div>

@@ -171,12 +171,12 @@ const PostCard = ({ post }: TPostProps) => {
                   {/* <p className="text-gray-600 text-sm mb-2">
                   {post?.description}
                 </p> */}
-                  <p
+                  <div
                     className="text-gray-500 text-sm mb-2"
                     dangerouslySetInnerHTML={{
                       __html: post?.description,
                     }}
-                  ></p>
+                  ></div>
                   <Image
                     src={post?.images}
                     alt={post?.title}
