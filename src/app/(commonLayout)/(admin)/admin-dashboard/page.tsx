@@ -6,6 +6,8 @@ import { FaUsers, FaCreditCard, FaFileAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import UserActivityChart from "@/components/charts/UserActivityChart";
+import MonthlyPostChart from "@/components/charts/MonthlyPostChart";
+import MonthlyPaymentChart from "@/components/charts/MonthlyPaymentChart";
 
 const sections = [
   {
@@ -71,8 +73,11 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Chart Part */}
-
-      <UserActivityChart />
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <UserActivityChart />
+        <MonthlyPostChart />
+        <MonthlyPaymentChart />
+      </div>
     </div>
   );
 };

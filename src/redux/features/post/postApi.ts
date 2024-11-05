@@ -102,6 +102,15 @@ const postApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["post"],
     }),
+
+    // Query for the post activity chart
+    getMonthlyPostChart: builder.query({
+      query: () => ({
+        url: `/post/post-activity`,
+        method: "GET",
+      }),
+      providesTags: ["post"],
+    }),
   }),
 });
 
@@ -116,4 +125,5 @@ export const {
   useAddCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useGetMonthlyPostChartQuery,
 } = postApi;

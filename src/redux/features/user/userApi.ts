@@ -119,7 +119,7 @@ const userApi = baseApi.injectEndpoints({
     // Query for the user activity chart
     getUserActivityChart: builder.query({
       query: () => ({
-        url: `/users/activity-chart`,
+        url: `/users/user-activity`,
         method: "GET",
       }),
       providesTags: ["user"],

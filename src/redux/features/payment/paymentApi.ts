@@ -10,7 +10,17 @@ const paymentApi = baseApi.injectEndpoints({
       }),
       providesTags: ["payment"],
     }),
+
+    // Query for the payment activity chart
+    getMonthlyPaymentChart: builder.query({
+      query: () => ({
+        url: `/payment/payment-activity`,
+        method: "GET",
+      }),
+      providesTags: ["payment"],
+    }),
   }),
 });
 
-export const { useGetPaymentHistoryQuery } = paymentApi;
+export const { useGetPaymentHistoryQuery, useGetMonthlyPaymentChartQuery } =
+  paymentApi;

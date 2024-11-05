@@ -22,17 +22,19 @@ type TChartData = {
 const UserActivityChart = () => {
   const { data, isLoading } = useGetUserActivityChartQuery({});
 
-  // console.log("chartData hook:", data);
+  // console.log("user chartData:", data);
 
   return (
     <>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="">
-          <h2 className="text-lg font-semibold text-emerald-500">
-            User Activity{" "}
-            <span className="text-gray-500 text-xs">
+        // <div>
+        //   <h2 className="text-lg font-semibold text-emerald-500">
+        <div className="p-4 bg-white rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold text-center text-emerald-500">
+            User Activity
+            <span className="text-gray-500 text-xs ml-1">
               (based on last 7 days)
             </span>
           </h2>
