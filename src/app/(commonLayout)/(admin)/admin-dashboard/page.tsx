@@ -5,6 +5,7 @@
 import { FaUsers, FaCreditCard, FaFileAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import UserActivityChart from "@/components/charts/UserActivityChart";
 
 const sections = [
   {
@@ -70,6 +71,8 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Chart Part */}
+
+      <UserActivityChart />
     </div>
   );
 };
