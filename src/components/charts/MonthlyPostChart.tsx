@@ -13,7 +13,7 @@ import {
 const MonthlyPostChart = () => {
   const { data, isLoading } = useGetMonthlyPostChartQuery({});
 
-  console.log("post chartData:", data);
+  // console.log("post chartData:", data);
   return (
     <>
       {isLoading ? (

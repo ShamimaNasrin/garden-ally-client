@@ -14,7 +14,7 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 const MonthlyPaymentChart = () => {
   const { data, isLoading } = useGetMonthlyPaymentChartQuery({});
 
-  console.log("payment chartData:", data);
+  // console.log("payment chartData:", data);
   return (
     <>
       {isLoading ? (

@@ -13,14 +13,14 @@ const sections = [
   {
     title: "User Management",
     icon: <FaUsers className="text-4xl text-lime-500" />,
-    description: "Manage users, roles, and permissions in the system.",
+    description: "Manage users and roles in the system.",
     bgColor: "bg-lime-100",
     path: "/admin-dashboard/user-management",
   },
   {
     title: "Payment History",
     icon: <FaCreditCard className="text-4xl text-green-500" />,
-    description: "View and manage all payment transactions and history.",
+    description: "View all payment transactions and history.",
     bgColor: "bg-green-100",
     path: "/admin-dashboard/payment-history",
   },
@@ -50,7 +50,7 @@ const AdminDashboard: React.FC = () => {
           whileInView={{ opacity: 1, translateY: 0 }}
           initial={{ opacity: 0, translateY: 20 }}
           transition={{ duration: 1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {sections.map((section, index) => (
             <div

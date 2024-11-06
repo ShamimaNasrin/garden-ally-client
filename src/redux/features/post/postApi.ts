@@ -13,7 +13,6 @@ const postApi = baseApi.injectEndpoints({
     }),
 
     // Query to fetch all posts
-
     getAllPosts: builder.query({
       query: (queryParams) => {
         const searchParams = new URLSearchParams(queryParams).toString();
@@ -111,6 +110,15 @@ const postApi = baseApi.injectEndpoints({
       }),
       providesTags: ["post"],
     }),
+
+    // Query to fetch a single post
+    getPostImages: builder.query({
+      query: () => ({
+        url: "/post/post-images",
+        method: "GET",
+      }),
+      providesTags: ["post"],
+    }),
   }),
 });
 
@@ -126,4 +134,5 @@ export const {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useGetMonthlyPostChartQuery,
+  useGetPostImagesQuery,
 } = postApi;
