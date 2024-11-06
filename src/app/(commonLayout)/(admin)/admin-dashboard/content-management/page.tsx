@@ -16,22 +16,30 @@ import { TNewsPost } from "@/types";
 
 const headings = ["Image", "Post ID", "Author", "Title", "Category", "Actions"];
 
-const ContentManagement: React.FC = () => {
+type TableRowProps = {
+  post: TNewsPost;
+  setShowDeleteModal: (value: boolean) => void;
+  setPostId: (value: string) => void;
+};
+
+const ContentManagement = () => {
   const { data: posts, isLoading: postLoading } = useGetAllPostsQuery({});
   const [deletePost] = useDeletePostMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postId, setPostId] = useState("");
+
+  console.log("posts:", posts?.data?.length);
 
   // delete post
   const handleDeletePost = async (postId: string) => {
-    // console.log("post deleted:", postId);
+    console.log("post deleted:", postId);
 
     try {
       const res = await deletePost(postId).unwrap();
-      // console.log("delete res:", res);
+      console.log("delete res:", res);
       if (res?.success) {
-        console.log("delete res:", res?.message);
+        // console.log("delete res:", res?.message);
         toast.success("Post deleted successfully!");
-        // router.push("/");
       }
     } catch (err) {
       console.error(err);
@@ -65,50 +73,12 @@ const ContentManagement: React.FC = () => {
             <tbody>
               {posts?.data?.length ? (
                 posts?.data?.map((post: TNewsPost) => (
-                  <tr
+                  <TableRow
                     key={post?._id}
-                    className="hover:bg-violet-50 transition-colors duration-200"
-                  >
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      <div className="w-[60px] h-[50px]">
-                        <Image
-                          src={post?.images}
-                          alt={post?.title}
-                          width={60}
-                          height={50}
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      </div>
-                    </td>
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post?._id}
-                    </td>
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post?.authorId?.name}
-                    </td>
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[150px]">
-                      {post?.title?.length <= 26
-                        ? post?.title
-                        : post?.title?.slice(0, 26) +
-                          (post?.title?.length > 26 ? "..." : "")}
-                    </td>
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      {post?.category}
-                    </td>
-                    <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
-                      <button
-                        onClick={() => setShowDeleteModal(true)}
-                        className="text-lg text-red-600"
-                      >
-                        <FiTrash2 />
-                      </button>
-                      <ConfirmationModal
-                        isOpen={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onConfirm={() => handleDeletePost(post?._id)}
-                      />
-                    </td>
-                  </tr>
+                    post={post}
+                    setShowDeleteModal={setShowDeleteModal}
+                    setPostId={setPostId}
+                  />
                 ))
               ) : (
                 <NoDataFound />
@@ -117,7 +87,59 @@ const ContentManagement: React.FC = () => {
           </table>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDeletePost(postId)}
+      />
     </div>
+  );
+};
+
+const TableRow = ({ post, setShowDeleteModal, setPostId }: TableRowProps) => {
+  return (
+    <>
+      <tr className="hover:bg-violet-50 transition-colors duration-200">
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
+          <div className="w-[60px] h-[50px]">
+            <Image
+              src={post?.images}
+              alt={post?.title}
+              width={60}
+              height={50}
+              className="w-full h-full object-cover rounded-md"
+            />
+          </div>
+        </td>
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
+          {post?._id}
+        </td>
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
+          {post?.authorId?.name}
+        </td>
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[150px]">
+          {post?.title?.length <= 26
+            ? post?.title
+            : post?.title?.slice(0, 26) +
+              (post?.title?.length > 26 ? "..." : "")}
+        </td>
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
+          {post?.category}
+        </td>
+        <td className="border-b border-gray-300 px-4 py-3 text-center min-w-[100px]">
+          <button
+            onClick={() => {
+              setShowDeleteModal(true);
+              setPostId(post?._id);
+            }}
+            className="text-lg text-red-600"
+          >
+            <FiTrash2 />
+          </button>
+        </td>
+      </tr>
+    </>
   );
 };
 
