@@ -133,7 +133,7 @@ const UserProfile = () => {
   }, [updatedCurrentUser, setValue]);
 
   const onSubmit: SubmitHandler<TUpdateUserForm> = async (data) => {
-    // console.log("formdata:", data);
+    console.log("formdata:", data);
 
     if (data.profilePhoto && data.profilePhoto.length) {
       console.log("default img:", data.profilePhoto);
@@ -142,7 +142,7 @@ const UserProfile = () => {
         const imgBBUrl = await UploadImgToImgBB(file);
         data.profilePhoto = imgBBUrl;
       } catch (error: any) {
-        toast.error(error.data.message, { duration: 1000 });
+        toast.error(error?.data?.message, { duration: 1000 });
         return;
       }
     } else {
@@ -156,7 +156,7 @@ const UserProfile = () => {
       profilePhoto: data.profilePhoto || updatedCurrentUser?.data?.profilePhoto,
     };
 
-    // console.log("userData:", userData);
+    console.log("userData:", userData);
 
     try {
       await updateUserProfile({
@@ -165,7 +165,7 @@ const UserProfile = () => {
       }).unwrap();
       toast.success("Profile updated successfully!");
     } catch (error) {
-      console.error(error);
+      console.error("user update error:", error);
       toast.error("Failed to update profile.");
     }
   };
@@ -286,28 +286,28 @@ const UserProfile = () => {
                 <h2 className="text-xl font-semibold mb-4">
                   Follow Other user
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-3 justify-center">
                   {followSuggestionLoading ? (
                     <LoadingSpinner />
                   ) : followSuggestions?.data?.length ? (
                     followSuggestions?.data?.map((suggestion: IUser) => (
                       <div
                         key={suggestion?._id}
-                        className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg"
+                        className="h-40 w-32  sm:justify-self-center flex flex-col items-center p-3 bg-white shadow-lg rounded-lg border relative overflow-hidden"
                       >
                         <Image
                           src={suggestion?.profilePhoto}
                           alt="Profile Picture"
-                          width={80}
-                          height={80}
-                          className="rounded-full mb-4 shadow-lg"
+                          width={50}
+                          height={50}
+                          className="rounded-full mb-3 shadow-lg"
                         />
-                        <h3 className="text-lg font-semibold text-gray-800">
+                        <h3 className="text-start text-sm font-semibold text-gray-800 line-clamp-2">
                           {suggestion?.name}
                         </h3>
                         <button
                           onClick={() => handleFollowUser(suggestion?._id)}
-                          className="px-4 py-1 mt-1 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+                          className="w-4/5 py-1 mt-1 bg-emerald-500 text-sm text-white rounded hover:bg-emerald-600 absolute bottom-2"
                           disabled={isFollowLoading}
                         >
                           Follow

@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -46,9 +48,10 @@ const LoginPage = () => {
       dispatch(setUser({ user: res.data.user, token: res.data.accessToken }));
       toast.success("Logged in", { id: toastId, duration: 2000 });
       router.push("/");
-    } catch (err) {
-      console.log(err);
-      toast.error("Something went wrong", { id: toastId, duration: 2000 });
+    } catch (err: any) {
+      // console.log("login error:", err);
+      const errorMessage = err?.data?.message || "Something went wrong";
+      toast.error(errorMessage, { id: toastId, duration: 2000 });
     }
   };
 

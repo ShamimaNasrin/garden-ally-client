@@ -55,6 +55,17 @@ const AdminProfile = () => {
   }, [currentUser]);
 
   // update user profile
+  // useEffect(() => {
+  //   if (updatedCurrentUser) {
+  //     reset({
+  //       name: updatedCurrentUser?.data?.name || "",
+  //       phone: updatedCurrentUser?.data?.phone || "",
+  //       address: updatedCurrentUser?.data?.address || "",
+  //       profilePhoto: updatedCurrentUser?.data?.profilePhoto || "",
+  //     });
+  //   }
+  // }, [updatedCurrentUser, reset]);
+
   useEffect(() => {
     if (updatedCurrentUser) {
       setValue("name", updatedCurrentUser?.data?.name);

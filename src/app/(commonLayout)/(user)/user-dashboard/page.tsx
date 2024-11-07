@@ -35,20 +35,20 @@ const UserDashboard = () => {
         <LoadingSpinner />
       ) : (
         <>
-          {currentUser && (
+          {updatedCurrentUser?.data && (
             <>
               {/* name and image */}
               <div className="flex flex-col items-center p-6">
                 <Image
-                  src={currentUser?.profilePhoto}
+                  src={updatedCurrentUser?.data?.profilePhoto}
                   alt="Profile Picture"
                   width={150}
                   height={150}
                   className="rounded-full mb-4 shadow-lg"
                 />
                 <h1 className="text-2xl font-semibold flex items-center">
-                  {currentUser?.name}
-                  {currentUser?.isVerified && (
+                  {updatedCurrentUser?.data?.name}
+                  {updatedCurrentUser?.data?.isVerified && (
                     <FaCheckCircle className="text-blue-500 ml-2" />
                   )}
                 </h1>
