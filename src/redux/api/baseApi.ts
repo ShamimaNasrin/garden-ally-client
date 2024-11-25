@@ -9,13 +9,13 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 import { logOut, setUser } from "../features/auth/authSlice";
+import envConfig from "@/config/envConfig";
 
-// https://garden-ally-server.vercel.app/api/
-// http://localhost:5000/api/
+const baseUrl = envConfig.baseApi;
 
 // base query configuration
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://garden-ally-server.vercel.app/api/",
+  baseUrl: baseUrl,
   credentials: "include", // for cookie
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -41,13 +41,10 @@ const baseQueryWithRefreshToken: BaseQueryFn<
       //* Send Refresh token
       console.log("Sending refresh token");
 
-      const res = await fetch(
-        "https://garden-ally-server.vercel.app/api/auth/refresh-token",
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${baseUrl}auth/refresh-token`, {
+        method: "POST",
+        credentials: "include",
+      });
 
       const data = await res.json();
 

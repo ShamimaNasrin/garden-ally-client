@@ -107,18 +107,16 @@ const Navbar = () => {
               <ul className="absolute right-0 md:left-auto left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2">
                 {currentUser ? (
                   <>
-                    <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link
-                        href={
-                          currentUser?.role === "user"
-                            ? "/user-dashboard"
-                            : "/admin-dashboard"
-                        }
-                        className="block text-sm text-gray-700"
-                      >
-                        Dashboard
-                      </Link>
-                    </li>
+                    {currentUser.role === "admin" && (
+                      <li className="px-4 py-2 hover:bg-gray-100">
+                        <Link
+                          href="/admin-dashboard"
+                          className="block text-sm text-gray-700"
+                        >
+                          Dashboard
+                        </Link>
+                      </li>
+                    )}
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link
                         href={
