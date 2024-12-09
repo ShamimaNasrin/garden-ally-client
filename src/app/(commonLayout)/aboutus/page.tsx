@@ -35,7 +35,7 @@ const teamMembers = [
 ];
 const About = () => {
   return (
-    <div className="  min-h-screen xl:py-12 xl:px-16 lg:py-12 lg:px-16 md:p-8 sm:p-5 p-5 ">
+    <div className="bg-zinc-50 min-h-screen xl:py-12 xl:px-16 lg:py-12 lg:px-16 md:p-8 sm:p-5 p-5 ">
       <motion.h2
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
