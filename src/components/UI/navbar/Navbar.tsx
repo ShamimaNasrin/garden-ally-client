@@ -20,6 +20,7 @@ import Image from "next/image";
 const Navbar = () => {
   const links = [
     { name: "Home", path: "/" },
+    { name: "Blogs", path: "/blogs" },
     // { name: "News Feed", path: "/news-feed" },
     { name: "About Us", path: "/aboutus" },
     { name: "Contact Us", path: "/contactus" },

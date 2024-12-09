@@ -48,7 +48,7 @@ const ImageGallery = () => {
   const { data: galleryData, isLoading } = useGetPostImagesQuery({});
 
   return (
-    <section className="py-12 px-5 xl:px-16 lg:px-12 bg-zinc-50">
+    <section className="py-12 max-w-7xl mx-auto bg-zinc-50">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-emerald-500">
           Our Latest Work Image Gallery

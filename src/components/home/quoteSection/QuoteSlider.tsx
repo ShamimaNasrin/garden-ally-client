@@ -50,7 +50,7 @@ const QuoteSlider = () => {
   };
 
   return (
-    <section className="py-12 px-5 xl:px-16 lg:px-12 bg-zinc-50">
+    <section className="py-12 max-w-7xl mx-auto bg-zinc-50">
       <h2 className="text-center text-3xl font-bold text-emerald-500 mb-2">
         Inspiring Gardening Quotes
       </h2>
