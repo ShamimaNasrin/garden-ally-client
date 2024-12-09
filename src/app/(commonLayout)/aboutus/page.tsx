@@ -40,7 +40,7 @@ const About = () => {
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
-        className="text-3xl font-bold  text-center"
+        className="text-3xl font-bold text-emerald-500 text-center"
       >
         About Us
       </motion.h2>

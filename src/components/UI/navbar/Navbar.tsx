@@ -10,6 +10,8 @@ import { usePathname, useRouter } from "next/navigation";
 // import React, { useEffect } from "react";
 import { useState } from "react";
 import { RiCloseLine, RiUserLine } from "react-icons/ri";
+import brandlogo from "@/assets/images/brandlogo.png";
+import Image from "next/image";
 
 // type TLoginUser = {
 //   role: "user" | "admin";
@@ -57,25 +59,35 @@ const Navbar = () => {
   };
 
   return (
-    <div className="shadow-md w-full sticky top-0 left-0 z-50">
-      <div className="md:flex items-center justify-between bg-white py-4 xl:px-16 lg:px-16 md:px-10 px-7">
-        <Link href="/" className="normal-case">
+    <div className="bg-zinc-50 w-full sticky top-0 left-0 z-50">
+      {/* <div className="bg-zinc-50 mx-auto max-w-7xl sticky top-0 left-0 z-50"> */}
+      <div className="md:flex mx-auto max-w-7xl items-center justify-between bg-zinc-50 py-4 ">
+        {/* <Link href="/" className="normal-case">
           <div className="font-bold text-2xl cursor-pointer flex items-center text-emerald-400">
-            {/* <span className="text-3xl text-indigo-600 mr-1 pt-2">.</span> */}
             GardenAlly
           </div>
-        </Link>
+        </Link> */}
 
+        <Link href="/" className="normal-case">
+          <div className="cursor-pointer flex items-center">
+            <Image
+              src={brandlogo}
+              alt="Garden Ally"
+              width={50}
+              height={50}
+              className="object-contain"
+            />
+          </div>
+        </Link>
         <div
           onClick={() => setOpen(!open)}
           className="text-3xl absolute right-8 top-6 cursor-pointer md:hidden"
         >
           <RiCloseLine className="text-emerald-400" />
         </div>
-
         {/* Navigation links */}
         <ul
-          className={`md:flex md:items-center md:pb-0 pb-12 md:static absolute bg-white md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
+          className={`md:flex md:items-center md:pb-0 pb-12 md:static absolute bg-zinc-50 md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
             open ? "top-20 " : "top-[-490px]"
           }`}
         >
@@ -104,7 +116,7 @@ const Navbar = () => {
             </button>
 
             {dropdownOpen && (
-              <ul className="absolute right-0 md:left-auto left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2">
+              <ul className="absolute right-0 md:left-auto left-0 mt-2 w-48 bg-zinc-50 border border-gray-200 rounded-md shadow-lg py-2">
                 {currentUser ? (
                   <>
                     {currentUser.role === "admin" && (
