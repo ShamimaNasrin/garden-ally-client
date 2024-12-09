@@ -35,7 +35,7 @@ const sections = [
 
 const AdminDashboard: React.FC = () => {
   return (
-    <div className="min-h-screen xl:py-12 lg:py-10 py-7 xl:px-16 lg:px-16 md:px-10 px-7 bg-zinc-100">
+    <div className="min-h-screen xl:py-12 lg:py-10 py-7 xl:px-16 lg:px-16 md:px-10 px-7 bg-zinc-50">
       {/* Management Card */}
       <div className="my-5">
         <motion.h1

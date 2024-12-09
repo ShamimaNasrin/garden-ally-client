@@ -113,7 +113,7 @@ const AdminProfile = () => {
   };
 
   return (
-    <div className=" mx-auto">
+    <div className="bg-zinc-50 mx-auto">
       {userLoading || updatedCurrentUserLoading ? (
         <LoadingSpinner />
       ) : (

@@ -6,36 +6,7 @@ import LoadingSpinner from "@/components/UI/LoadingSpinner";
 import NoDataFound from "@/components/UI/NoDataFound";
 import { useGetAllPostsQuery } from "@/redux/features/post/postApi";
 import { TNewsPost } from "@/types";
-import React, { useState, useEffect, useCallback } from "react";
-
-// const posts = [
-//   {
-//     id: "1",
-//     authorId: "user1",
-//     authorName: "John",
-//     title: "Post 1",
-//     description: "This is the first post.",
-//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-//     isPremium: true,
-//     isUserVerified: false,
-//     category: "Flowers",
-//     upVoteNumber: 10,
-//     downVoteNumber: 20,
-//   },
-//   {
-//     id: "2",
-//     authorId: "user2",
-//     authorName: "Alex",
-//     title: "Post 2",
-//     description: "This is the second post.",
-//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-//     isPremium: false,
-//     isUserVerified: false,
-//     category: "Vegetables",
-//     upVoteNumber: 90,
-//     downVoteNumber: 5,
-//   },
-// ];
+import React, { useState } from "react";
 
 const NewsFeedPage = () => {
   const [searchByTitle, setSearchByTitle] = useState("");
@@ -47,12 +18,8 @@ const NewsFeedPage = () => {
   if (searchByTitle) queryParams.searchTerm = searchByTitle;
   if (searchByCategory) queryParams.category = searchByCategory;
 
-  // console.log("queryParams:", queryParams);
-
   const { data: postData, isLoading: postLoading } =
     useGetAllPostsQuery(queryParams);
-
-  // console.log("all post data:", postData);
 
   // clear all filter
   const handleFilterClear = () => {
@@ -61,12 +28,12 @@ const NewsFeedPage = () => {
   };
 
   return (
-    <div className="bg-zinc-100 py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
+    // <div className="bg-zinc-50 h-screen overflow-hidden xl:px-16 lg:px-16 md:px-8 px-6 flex flex-col xl:flex-row lg:flex-row md:flex-row gap-6">
+    <div className="bg-zinc-50 h-screen overflow-hidden flex flex-col xl:flex-row lg:flex-row md:flex-row">
       {/* Filter Section */}
-      <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8 px-4 rounded-lg ">
-        <div className="p-7 bg-white shadow-lg rounded-lg">
-          {/* Category Filter */}
-          <h4 className="font-bold text-lg  mt-2">By Category</h4>
+      <div className="h-full xl:w-[25%] lg:w-[25%] md:w-[30%] w-full p-4 hidden md:block border-r ">
+        <div className="p-7 border-b">
+          <h4 className="font-bold text-lg mt-2">By Category</h4>
           <div className="relative my-4">
             <select
               value={searchByCategory}
@@ -81,21 +48,8 @@ const NewsFeedPage = () => {
               <option value="Landscaping">Landscaping</option>
               <option value="Indoor Plants">Indoor Plants</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <svg
-                className="fill-current h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M5.516 7.548a.997.997 0 011.461 0L10 10.572l3.023-3.024a.997.997 0 011.461 0 .997.997 0 010 1.461l-3.75 3.75a.997.997 0 01-1.461 0l-3.75-3.75a.997.997 0 010-1.461z" />
-              </svg>
-            </div>
           </div>
-
-          {/* Search by title or keywords */}
-          <h4 className="font-bold text-lg  my-2">
-            Search By Title or Keywords
-          </h4>
+          <h4 className="font-bold text-lg my-2">Search By Title</h4>
           <div>
             <input
               onChange={(e) => setSearchByTitle(e.target.value)}
@@ -105,47 +59,59 @@ const NewsFeedPage = () => {
               className="w-full p-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
-
-          {/* Clear Filters */}
-          <div className=" flex xl:flex-row lg:flex-row md:flex-row gap-3 flex-col justify-center items-center mx-auto my-5">
-            <div>
-              <button
-                onClick={() => setIsAddPostModalOpen(true)}
-                className="bg-emerald-500 text-white  text-sm px-3 py-2 rounded-md transition-all duration-500 hover:bg-emerald-700 "
-              >
-                Add Post
-              </button>
-            </div>
-
-            <div>
-              <button
-                onClick={handleFilterClear}
-                className="bg-emerald-500 text-white  text-sm px-3 py-2 rounded-md transition-all duration-500 hover:bg-emerald-700 "
-              >
-                Clear filter
-              </button>
-            </div>
+          <div className="flex gap-3 flex-col xl:flex-row lg:flex-row md:flex-row justify-center items-center mx-auto my-5">
+            <button
+              onClick={() => setIsAddPostModalOpen(true)}
+              className="bg-emerald-500 text-white text-sm px-3 py-2 rounded-md transition-all duration-500 hover:bg-emerald-700"
+            >
+              Add Post
+            </button>
+            <button
+              onClick={handleFilterClear}
+              className="bg-emerald-500 text-white text-sm px-3 py-2 rounded-md transition-all duration-500 hover:bg-emerald-700"
+            >
+              Clear filter
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Post section */}
-      <div className="xl:w-[60%] lg:w-[60%] md:w-[70%] w-full">
-        <div className="mt-8">
-          <div className="">
-            {/* {posts.map((post) => (
-              <PostCard key={post.id} userId="user1" post={post} />
-            ))} */}
-            {postLoading ? (
-              <LoadingSpinner />
-            ) : postData?.data?.length ? (
-              postData?.data?.map((post: TNewsPost) => (
-                <PostCard key={post._id} post={post} />
-              ))
-            ) : (
-              <NoDataFound />
-            )}
-          </div>
+      {/* Post Section */}
+      <div className="xl:w-[50%] lg:w-[50%] md:w-[70%] w-full flex justify-center mx-auto overflow-y-auto">
+        <div className="">
+          {postLoading ? (
+            <LoadingSpinner />
+          ) : postData?.data?.length ? (
+            postData?.data?.map((post: TNewsPost) => (
+              <PostCard key={post._id} post={post} />
+            ))
+          ) : (
+            <NoDataFound />
+          )}
+        </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="h-full xl:w-[25%] lg:w-[25%] md:w-[30%] w-full p-4 hidden md:block border-l">
+        <div className="p-7 border-b">
+          <h4 className="font-bold text-lg">Trending Topics</h4>
+          <ul className="mt-4 space-y-3">
+            <li className="text-sm text-gray-700 hover:underline cursor-pointer">
+              Gardening Tips for Beginners
+            </li>
+            <li className="text-sm text-gray-700 hover:underline cursor-pointer">
+              Best Indoor Plants for Air Purification
+            </li>
+            <li className="text-sm text-gray-700 hover:underline cursor-pointer">
+              How to Start Composting at Home
+            </li>
+            <li className="text-sm text-gray-700 hover:underline cursor-pointer">
+              Seasonal Gardening Checklist
+            </li>
+            <li className="text-sm text-gray-700 hover:underline cursor-pointer">
+              Organic Pest Control Methods
+            </li>
+          </ul>
         </div>
       </div>
 

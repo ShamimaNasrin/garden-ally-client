@@ -60,7 +60,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-zinc-50 w-full sticky top-0 left-0 z-50">
+    <div className="bg-zinc-50 w-full sticky top-0 left-0 z-50 shadow-sm">
       {/* <div className="bg-zinc-50 mx-auto max-w-7xl sticky top-0 left-0 z-50"> */}
       <div className="md:flex mx-auto max-w-7xl items-center justify-between bg-zinc-50 py-4 ">
         {/* <Link href="/" className="normal-case">

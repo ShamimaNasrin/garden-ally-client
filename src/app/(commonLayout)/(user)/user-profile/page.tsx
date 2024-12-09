@@ -26,35 +26,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import UploadImgToImgBB from "@/components/profile/UploadImgToImgBB";
 import ChangePassword from "@/components/profile/ChangePassword";
 
-// const posts = [
-//   {
-//     id: "1",
-//     authorId: "user1",
-//     authorName: "John",
-//     title: "Post 1",
-//     description: "This is the first post.",
-//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-//     isPremium: false,
-//     isUserVerified: false,
-//     category: "Vegetables",
-//     upVoteNumber: 10,
-//     downVoteNumber: 20,
-//   },
-//   {
-//     id: "2",
-//     authorId: "user2",
-//     authorName: "Alex",
-//     title: "Post 2",
-//     description: "This is the second post.",
-//     images: "https://i.ibb.co.com/YDnvjCd/garden2.jpg",
-//     isPremium: false,
-//     isUserVerified: false,
-//     category: "Vegetables",
-//     upVoteNumber: 90,
-//     downVoteNumber: 5,
-//   },
-// ];
-
 export interface FollowSuggestion {
   _id: string;
   name: string;
@@ -244,7 +215,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className=" mx-auto">
+    <div className="bg-zinc-50 mx-auto">
       {userLoading || updatedCurrentUserLoading ? (
         <LoadingSpinner />
       ) : (
@@ -322,7 +293,7 @@ const UserProfile = () => {
 
               {/* user info and post layout */}
 
-              <div className="bg-zinc-100 py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
+              <div className=" py-6 xl:px-16 lg:px-16 md:px-8 px-6 flex xl:flex-row lg:flex-row md:flex-row flex-col gap-6">
                 {/* update user INfo */}
                 <div className="xl:w-[40%] lg:w-[40%] md:w-[30%] w-full mt-8 px-4 rounded-lg ">
                   <>
